@@ -11,8 +11,8 @@ repositories {
     name = "GitHubPackages"
     url = uri("https://maven.pkg.github.com/Flexpedite/flexpedite")
     credentials {
-      username = providers.gradleProperty("githubUsername").get()
-      password = providers.gradleProperty("githubAccessToken").get()
+      username = System.getenv("GITHUB_USERNAME") ?: providers.gradleProperty("githubUsername").get()
+      password = System.getenv("GITHUB_ACCESS_TOKEN") ?: providers.gradleProperty("githubAccessToken").get()
     }
   }
 }
