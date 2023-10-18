@@ -10,6 +10,8 @@ import net.taskwolf.core.module.ModuleDescription;
 import net.taskwolf.core.module.ModuleLoadPriority;
 import net.taskwolf.core.trigger.TriggerFactory;
 import net.taskwolf.core.trigger.TriggerInformation;
+import net.taskwolf.discord.action.DiscordActionFactory;
+import net.taskwolf.discord.trigger.DiscordTriggerFactory;
 import net.taskwolf.discord.trigger.MessageListener;
 
 import java.util.List;
@@ -31,6 +33,8 @@ public final class DiscordModule extends Module {
     log = log().subLog("Discord");
     discordBot = DiscordBot.create(log, DiscordConfiguration.createAndLoad());
     discordBot.initialize();
+    triggerFactory = DiscordTriggerFactory.create();
+    actionFactory = DiscordActionFactory.create(discordBot.jda());
     discordBot.jda().addEventListener(MessageListener.create(coreModule(),
       triggerDatabaseTable(), triggerFactory, Lists.newArrayList()));
   }
@@ -42,12 +46,12 @@ public final class DiscordModule extends Module {
 
   @Override
   public TriggerFactory triggerFactory() {
-    return null;
+    return triggerFactory;
   }
 
   @Override
   public ActionFactory actionFactory() {
-    return null;
+    return actionFactory;
   }
 
   @Override

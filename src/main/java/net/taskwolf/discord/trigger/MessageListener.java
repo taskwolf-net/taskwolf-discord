@@ -49,7 +49,7 @@ public final class MessageListener extends ListenerAdapter {
       return false;
     }
     var channelMessageTrigger = (ChannelMessageTrigger)
-      triggerFactory.create(trigger.content());
+      triggerFactory.create(trigger.type(), trigger.content());
     return event.getGuild().getId().equals(channelMessageTrigger.guildIdentifier()) &&
       event.getChannel().getId().equals(channelMessageTrigger.channelIdentifier());
   }
@@ -69,7 +69,7 @@ public final class MessageListener extends ListenerAdapter {
       return false;
     }
     var privateMessageTrigger = (PrivateMessageTrigger)
-      triggerFactory.create(trigger.content());
+      triggerFactory.create(trigger.type(), trigger.content());
     return event.getAuthor().getId().equals(privateMessageTrigger.authorIdentifier());
   }
 
