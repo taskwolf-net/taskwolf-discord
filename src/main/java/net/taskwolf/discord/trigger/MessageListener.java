@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.taskwolf.core.CoreModule;
+import net.taskwolf.core.distribution.Distribution;
 import net.taskwolf.core.trigger.TriggerDatabaseTable;
 import net.taskwolf.core.trigger.TriggerEntry;
 import net.taskwolf.core.trigger.TriggerFactory;
@@ -13,7 +14,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -22,7 +22,7 @@ public final class MessageListener extends ListenerAdapter {
   private final CoreModule coreModule;
   private final TriggerDatabaseTable triggerDatabaseTable;
   private final TriggerFactory triggerFactory;
-  private final List<UUID> users;
+  private final Distribution distribution;
 
   @Override
   public void onMessageReceived(@NotNull MessageReceivedEvent event) {
@@ -78,7 +78,7 @@ public final class MessageListener extends ListenerAdapter {
   ) {
     return triggerDatabaseTable.findTriggersByModuleAndType("discord", triggerType)
       .thenApply(entries -> entries.stream().filter(entry ->
-        users.contains(entry.ownerId())).collect(Collectors.toList()));
+        distribution.isAssignedUser("discord", entry.ownerId())).collect(Collectors.toList()));
   }
 
   private void executeWorkflows(
