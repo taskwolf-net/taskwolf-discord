@@ -28,6 +28,9 @@ public final class MessageListener extends ListenerAdapter {
   public void onMessageReceived(@NotNull MessageReceivedEvent event) {
     super.onMessageReceived(event);
     var information = Maps.<String, Object>newHashMap();
+    information.put("message", event.getMessage());
+    information.put("messageAuthorIdentifier", event.getAuthor().getId());
+    information.put("messageAuthorName", event.getAuthor().getName());
     findChannelMessageTriggers(event).thenAccept(entries ->
       executeWorkflows(entries, information));
     findPrivateMessageTriggers(event).thenAccept(entries ->

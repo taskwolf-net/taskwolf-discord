@@ -2,22 +2,39 @@ package net.taskwolf.discord.action;
 
 import com.datastax.oss.driver.shaded.guava.common.collect.Maps;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.taskwolf.core.action.Action;
+import net.taskwolf.core.action.ActionInformation;
+import net.taskwolf.core.workflow.component.ComponentType;
+import net.taskwolf.core.workflow.component.ComponentVariable;
 import org.json.JSONObject;
 
 import java.util.Map;
 
 @AllArgsConstructor(staticName = "create")
 public final class ChannelMessageAction implements Action {
+  public static ActionInformation information() {
+    return ActionInformation.builder()
+      .withName("Send channel message")
+      .withDescription("Send channel message")
+      .withInputVariable(ComponentVariable.create("Guild Identifier",
+        "guildIdentifier", ComponentType.TEXT))
+      .withInputVariable(ComponentVariable.create("Channel Identifier",
+        "channelIdentifier", ComponentType.TEXT))
+      .withInputVariable(ComponentVariable.create("Message",
+        "message", ComponentType.TEXT))
+      .withOutputVariable(ComponentVariable.create("Channel Name",
+        "channelName", ComponentType.TEXT)).build();
+  }
+
   public static ChannelMessageAction of(JDA jda, JSONObject content) {
-    return create(jda, content.getString("channelIdentifier"),
-      content.getString("message"));
+    return create(jda, content.getString("guildIdentifier"),
+      content.getString("channelIdentifier"), content.getString("message"));
   }
 
   private final JDA jda;
+  private final String guildIdentifier;
   private final String channelIdentifier;
   private String message;
 

@@ -5,12 +5,27 @@ import lombok.AllArgsConstructor;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.User;
 import net.taskwolf.core.action.Action;
+import net.taskwolf.core.action.ActionInformation;
+import net.taskwolf.core.workflow.component.ComponentType;
+import net.taskwolf.core.workflow.component.ComponentVariable;
 import org.json.JSONObject;
 
 import java.util.Map;
 
 @AllArgsConstructor(staticName = "create")
 public class PrivateMessageAction implements Action {
+  public static ActionInformation information() {
+    return ActionInformation.builder()
+      .withName("Send private message")
+      .withDescription("Send private message")
+      .withInputVariable(ComponentVariable.create("User Identifier",
+        "userIdentifier", ComponentType.TEXT))
+      .withInputVariable(ComponentVariable.create("Message",
+        "message", ComponentType.TEXT))
+      .withOutputVariable(ComponentVariable.create("User Name",
+        "userName", ComponentType.TEXT)).build();
+  }
+
   public static PrivateMessageAction of(JDA jda, JSONObject content) {
     return create(jda, content.getString("userIdentifier"),
       content.getString("message"));

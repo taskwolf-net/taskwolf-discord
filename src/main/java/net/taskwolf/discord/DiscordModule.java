@@ -10,9 +10,13 @@ import net.taskwolf.core.module.ModuleDescription;
 import net.taskwolf.core.module.ModuleLoadPriority;
 import net.taskwolf.core.trigger.TriggerFactory;
 import net.taskwolf.core.trigger.TriggerInformation;
+import net.taskwolf.discord.action.ChannelMessageAction;
 import net.taskwolf.discord.action.DiscordActionFactory;
+import net.taskwolf.discord.action.PrivateMessageAction;
+import net.taskwolf.discord.trigger.ChannelMessageTrigger;
 import net.taskwolf.discord.trigger.DiscordTriggerFactory;
 import net.taskwolf.discord.trigger.MessageListener;
+import net.taskwolf.discord.trigger.PrivateMessageTrigger;
 
 import java.util.List;
 
@@ -56,11 +60,13 @@ public final class DiscordModule extends Module {
 
   @Override
   public List<TriggerInformation> triggerInformation() {
-    return Lists.newArrayList();
+    return Lists.newArrayList(ChannelMessageTrigger.information(),
+      PrivateMessageTrigger.information());
   }
 
   @Override
   public List<ActionInformation> actionInformation() {
-    return Lists.newArrayList();
+    return Lists.newArrayList(ChannelMessageAction.information(),
+      PrivateMessageAction.information());
   }
 }
