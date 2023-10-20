@@ -39,7 +39,7 @@ dependencies {
 
   compileOnly("org.springframework.boot:spring-boot-starter-web:3.1.5")
 
-  implementation("io.jsonwebtoken:jjwt:0.12.3")
+  compileOnly("io.jsonwebtoken:jjwt:0.12.3")
 
   implementation("net.dv8tion:JDA:5.0.0-beta.15")
 }

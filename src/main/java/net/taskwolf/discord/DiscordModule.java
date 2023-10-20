@@ -34,13 +34,14 @@ public final class DiscordModule extends Module {
 
   @Override
   public void enable() throws Exception {
-    log = log().subLog("Discord");
+    log = coreModule().log().subLog("Discord");
     discordBot = DiscordBot.create(log, DiscordConfiguration.createAndLoad());
     discordBot.initialize();
     triggerFactory = DiscordTriggerFactory.create();
     actionFactory = DiscordActionFactory.create(discordBot.jda());
     discordBot.jda().addEventListener(MessageListener.create(coreModule(),
-      triggerDatabaseTable(), triggerFactory, distribution()));
+      coreModule().triggerDatabaseTable(), triggerFactory,
+      coreModule().distribution()));
   }
 
   @Override
