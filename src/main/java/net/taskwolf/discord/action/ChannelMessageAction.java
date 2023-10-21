@@ -18,6 +18,7 @@ public final class ChannelMessageAction implements Action {
     return ActionInformation.builder()
       .withName("Send channel message")
       .withDescription("Send channel message")
+      .withIdentifier("discord-channel-message-action")
       .withInputVariable(ComponentVariable.create("Guild Identifier",
         "guildIdentifier", ComponentType.TEXT))
       .withInputVariable(ComponentVariable.create("Channel Identifier",

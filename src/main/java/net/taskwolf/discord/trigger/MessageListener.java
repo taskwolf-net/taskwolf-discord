@@ -40,7 +40,7 @@ public final class MessageListener extends ListenerAdapter {
   private CompletableFuture<List<TriggerEntry>> findChannelMessageTriggers(
     MessageReceivedEvent event
   ) {
-    return coreModule.findTriggerEntries("discord", "discord-channel-message")
+    return coreModule.findTriggerEntries("discord", "discord-channel-message-trigger")
       .thenApply(entries -> entries.stream().filter(entry ->
         channelMessageSuitability(entry, event)).collect(Collectors.toList()));
   }
@@ -60,7 +60,7 @@ public final class MessageListener extends ListenerAdapter {
   private CompletableFuture<List<TriggerEntry>> findPrivateMessageTriggers(
     MessageReceivedEvent event
   ) {
-    return coreModule.findTriggerEntries("discord", "discord-private-message")
+    return coreModule.findTriggerEntries("discord", "discord-private-message-trigger")
       .thenApply(entries -> entries.stream().filter(entry ->
         privateMessageSuitability(entry, event)).collect(Collectors.toList()));
   }
