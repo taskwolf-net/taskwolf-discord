@@ -40,7 +40,7 @@ public final class MessageListener extends ListenerAdapter {
   private CompletableFuture<List<TriggerEntry>> findChannelMessageTriggers(
     MessageReceivedEvent event
   ) {
-    return findTriggerEntries("discord-channel-message")
+    return coreModule.findTriggerEntries("discord", "discord-channel-message")
       .thenApply(entries -> entries.stream().filter(entry ->
         channelMessageSuitability(entry, event)).collect(Collectors.toList()));
   }
@@ -60,7 +60,7 @@ public final class MessageListener extends ListenerAdapter {
   private CompletableFuture<List<TriggerEntry>> findPrivateMessageTriggers(
     MessageReceivedEvent event
   ) {
-    return findTriggerEntries("discord-private-message")
+    return coreModule.findTriggerEntries("discord", "discord-private-message")
       .thenApply(entries -> entries.stream().filter(entry ->
         privateMessageSuitability(entry, event)).collect(Collectors.toList()));
   }
@@ -74,14 +74,6 @@ public final class MessageListener extends ListenerAdapter {
     var privateMessageTrigger = (PrivateMessageTrigger)
       triggerFactory.create(trigger.type(), trigger.content());
     return event.getAuthor().getId().equals(privateMessageTrigger.authorIdentifier());
-  }
-
-  private CompletableFuture<List<TriggerEntry>> findTriggerEntries(
-    String triggerType
-  ) {
-    return triggerDatabaseTable.findTriggersByModuleAndType("discord", triggerType)
-      .thenApply(entries -> entries.stream().filter(entry ->
-        distribution.isAssignedUser("discord", entry.ownerId())).collect(Collectors.toList()));
   }
 
   private void executeWorkflows(
