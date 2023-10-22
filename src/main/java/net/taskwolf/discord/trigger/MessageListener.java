@@ -20,21 +20,15 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor(staticName = "create")
 public final class MessageListener extends ListenerAdapter {
   private final CoreModule coreModule;
-  private final TriggerDatabaseTable triggerDatabaseTable;
   private final TriggerFactory triggerFactory;
-  private final Distribution distribution;
 
   @Override
   public void onMessageReceived(@NotNull MessageReceivedEvent event) {
     super.onMessageReceived(event);
-    var information = Maps.<String, Object>newHashMap();
-    information.put("message", event.getMessage());
-    information.put("messageAuthorIdentifier", event.getAuthor().getId());
-    information.put("messageAuthorName", event.getAuthor().getName());
     findChannelMessageTriggers(event).thenAccept(entries ->
-      executeWorkflows(entries, information));
+      executeWorkflows(entries, channelMessageInformation(event)));
     findPrivateMessageTriggers(event).thenAccept(entries ->
-      executeWorkflows(entries, information));
+      executeWorkflows(entries, privateMessageInformation(event)));
   }
 
   private CompletableFuture<List<TriggerEntry>> findChannelMessageTriggers(
@@ -83,5 +77,23 @@ public final class MessageListener extends ListenerAdapter {
       coreModule.createWorkflow(entry.id()).thenAccept(workflow ->
         workflow.trigger(information));
     }
+  }
+
+  private Map<String, Object> channelMessageInformation(MessageReceivedEvent event) {
+    var information = Maps.<String, Object>newHashMap();
+    information.put("guildIdentifier", event.getGuild().getId());
+    information.put("channelIdentifier", event.getChannel().getId());
+    information.put("message", event.getMessage());
+    information.put("messageAuthorIdentifier", event.getAuthor().getId());
+    information.put("messageAuthorName", event.getAuthor().getName());
+    return information;
+  }
+
+  private Map<String, Object> privateMessageInformation(MessageReceivedEvent event) {
+    var information = Maps.<String, Object>newHashMap();
+    information.put("authorIdentifier", event.getAuthor().getId());
+    information.put("authorName", event.getAuthor().getName());
+    information.put("message", event.getMessage());
+    return information;
   }
 }

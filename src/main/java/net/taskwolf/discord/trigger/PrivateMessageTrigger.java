@@ -21,10 +21,10 @@ public final class PrivateMessageTrigger implements Trigger {
       .withIdentifier("discord-private-message-trigger")
       .withInputVariable(ComponentVariable.create("Author Identifier",
         "authorIdentifier", ComponentType.TEXT))
-      .withOutputVariable(ComponentVariable.create("Message",
-        "message", ComponentType.TEXT))
       .withOutputVariable(ComponentVariable.create("Author Name",
-        "authorName", ComponentType.TEXT)).build();
+        "authorName", ComponentType.TEXT))
+      .withOutputVariable(ComponentVariable.create("Message",
+        "message", ComponentType.TEXT)).build();
   }
 
   public static PrivateMessageTrigger of(JSONObject content) {

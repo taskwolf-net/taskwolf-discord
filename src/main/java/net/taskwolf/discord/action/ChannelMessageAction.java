@@ -51,6 +51,7 @@ public final class ChannelMessageAction implements Action {
 
   private Map<String, Object> buildInformation(TextChannel channel) {
     var information = Maps.<String, Object>newHashMap();
+    information.put("guildIdentifier", guildIdentifier);
     information.put("channelIdentifier", channelIdentifier);
     information.put("channelName", channel.getName());
     information.put("message", message);

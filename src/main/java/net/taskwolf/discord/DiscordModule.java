@@ -40,8 +40,7 @@ public final class DiscordModule extends Module {
     triggerFactory = DiscordTriggerFactory.create();
     actionFactory = DiscordActionFactory.create(discordBot.jda());
     discordBot.jda().addEventListener(MessageListener.create(coreModule(),
-      coreModule().triggerDatabaseTable(), triggerFactory,
-      coreModule().distribution()));
+      triggerFactory));
   }
 
   @Override
