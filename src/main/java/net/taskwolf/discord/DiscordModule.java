@@ -7,6 +7,7 @@ import net.taskwolf.core.action.ActionInformation;
 import net.taskwolf.core.log.Log;
 import net.taskwolf.core.module.Module;
 import net.taskwolf.core.module.ModuleDescription;
+import net.taskwolf.core.module.ModuleInformation;
 import net.taskwolf.core.module.ModuleLoadPriority;
 import net.taskwolf.core.trigger.TriggerFactory;
 import net.taskwolf.core.trigger.TriggerInformation;
@@ -56,6 +57,12 @@ public final class DiscordModule extends Module {
   @Override
   public ActionFactory actionFactory() {
     return actionFactory;
+  }
+
+  @Override
+  public ModuleInformation moduleInformation() {
+    return ModuleInformation.create("Discord", "", "",
+      ModuleInformation.Type.PUBLIC);
   }
 
   @Override
