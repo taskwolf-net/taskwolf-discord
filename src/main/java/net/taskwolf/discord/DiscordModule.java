@@ -61,7 +61,7 @@ public final class DiscordModule extends Module {
 
   @Override
   public ModuleInformation moduleInformation() {
-    return ModuleInformation.create("Discord", "", "",
+    return ModuleInformation.create("Discord", "", "discord.png",
       ModuleInformation.Type.PUBLIC);
   }
 
