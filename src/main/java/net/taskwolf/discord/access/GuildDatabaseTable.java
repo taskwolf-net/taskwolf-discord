@@ -74,6 +74,10 @@ public final class GuildDatabaseTable extends DatabaseTable {
     delete(DatabaseCell.create(userId));
   }
 
+  public CompletableFuture<Boolean> userGuildsExists(UUID userId) {
+    return exists(DatabaseCell.create(userId));
+  }
+
   public CompletableFuture<List<String>> findGuilds(UUID userId) {
     return selectRow(DatabaseCell.create(userId))
       .thenApply(row -> row.findCell(1).listValue());
