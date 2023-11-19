@@ -33,7 +33,8 @@ public class GuildController extends TaskwolfRestController {
     var userId = findUserId(apiKey);
     guildDatabaseTable.userGuildsExists(userId).thenAccept(exists ->
       addGuild(userId, guildId, exists));
-    response.setStatus(200);
+    response.setHeader("Location", "https://google.com");
+    response.setStatus(302);
   }
 
   private void addGuild(UUID userId, String guildId, boolean userGuildsExists) {
