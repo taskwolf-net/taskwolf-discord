@@ -2,6 +2,7 @@ package net.taskwolf.discord;
 
 import com.google.common.collect.Lists;
 import net.taskwolf.core.CoreModule;
+import net.taskwolf.core.account.AccountLink;
 import net.taskwolf.core.action.ActionFactory;
 import net.taskwolf.core.action.ActionInformation;
 import net.taskwolf.core.log.Log;
@@ -11,6 +12,7 @@ import net.taskwolf.core.module.ModuleInformation;
 import net.taskwolf.core.module.ModuleLoadPriority;
 import net.taskwolf.core.trigger.TriggerFactory;
 import net.taskwolf.core.trigger.TriggerInformation;
+import net.taskwolf.discord.access.GuildDatabaseTable;
 import net.taskwolf.discord.action.ChannelMessageAction;
 import net.taskwolf.discord.action.DiscordActionFactory;
 import net.taskwolf.discord.action.PrivateMessageAction;
@@ -25,8 +27,10 @@ import java.util.List;
   priority = ModuleLoadPriority.NEUTRAL)
 public final class DiscordModule extends Module {
   private Log log;
+  private GuildDatabaseTable guildDatabaseTable;
   private TriggerFactory triggerFactory;
   private ActionFactory actionFactory;
+  private AccountLink accountLink;
   private DiscordBot discordBot;
 
   public DiscordModule(CoreModule coreModule) {
@@ -36,10 +40,13 @@ public final class DiscordModule extends Module {
   @Override
   public void enable() throws Exception {
     log = coreModule().log().subLog("Discord");
+    guildDatabaseTable = GuildDatabaseTable.create(coreModule().databaseConnection(),
+      coreModule().databaseKeyspace());
     discordBot = DiscordBot.create(log, DiscordConfiguration.createAndLoad());
     discordBot.initialize();
     triggerFactory = DiscordTriggerFactory.create();
     actionFactory = DiscordActionFactory.create(discordBot.jda());
+    accountLink = DiscordAccountLink.create(discordBot.jda(), guildDatabaseTable);
     discordBot.jda().addEventListener(MessageListener.create(coreModule(),
       triggerFactory));
   }
@@ -60,6 +67,11 @@ public final class DiscordModule extends Module {
   }
 
   @Override
+  public AccountLink accountLink() {
+    return accountLink;
+  }
+
+  @Override
   public ModuleInformation moduleInformation() {
     return ModuleInformation.create("Discord", "", "discord.png",
       ModuleInformation.Type.PUBLIC);
@@ -67,8 +79,8 @@ public final class DiscordModule extends Module {
 
   @Override
   public List<TriggerInformation> triggerInformation() {
-    return Lists.newArrayList(ChannelMessageTrigger.information(),
-      PrivateMessageTrigger.information());
+    return Lists.newArrayList(ChannelMessageTrigger.information(discordBot.jda(),
+      guildDatabaseTable), PrivateMessageTrigger.information());
   }
 
   @Override

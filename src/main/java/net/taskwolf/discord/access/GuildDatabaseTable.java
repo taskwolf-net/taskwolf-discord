@@ -66,7 +66,7 @@ public final class GuildDatabaseTable extends DatabaseTable {
     updateUserGuilds(userId, guildIds);
   }
 
-  private void updateUserGuilds(UUID userId, List<String> guildIds) {
+  public void updateUserGuilds(UUID userId, List<String> guildIds) {
     update(DatabaseCell.create(userId), DatabaseRow.of(userId, guildIds));
   }
 
