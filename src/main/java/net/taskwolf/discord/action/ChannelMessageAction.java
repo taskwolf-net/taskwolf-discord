@@ -47,8 +47,8 @@ public final class ChannelMessageAction implements Action {
     for (var entry : information.entrySet()) {
       message = message.replace("$" + entry.getKey(), entry.getValue().toString());
     }
-    var channel = jda.getChannelById(TextChannel.class, channelIdentifier);
-    channel.sendMessage(message);
+    var channel = jda.getTextChannelById(channelIdentifier);
+    channel.sendMessage(message).queue();
     return buildInformation(channel);
   }
 

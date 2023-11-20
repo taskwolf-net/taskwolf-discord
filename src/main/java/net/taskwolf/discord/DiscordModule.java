@@ -58,7 +58,7 @@ public final class DiscordModule extends Module {
     accountLink = DiscordAccountLink.create(jda, guildDatabaseTable);
     guildComponentSelect = createGuildComponentSelect(jda, guildDatabaseTable);
     channelComponentSelect = createChannelComponentSelect(jda);
-    jda.addEventListener(MessageListener.create(coreModule(), triggerFactory));
+    jda.addEventListener(MessageListener.create(coreModule(), triggerFactory, jda));
   }
 
   private ComponentSelect createGuildComponentSelect(

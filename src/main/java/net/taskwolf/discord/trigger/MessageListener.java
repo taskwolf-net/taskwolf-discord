@@ -2,12 +2,11 @@ package net.taskwolf.discord.trigger;
 
 import com.google.common.collect.Maps;
 import lombok.RequiredArgsConstructor;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.taskwolf.core.CoreModule;
-import net.taskwolf.core.distribution.Distribution;
-import net.taskwolf.core.trigger.TriggerDatabaseTable;
 import net.taskwolf.core.trigger.TriggerEntry;
 import net.taskwolf.core.trigger.TriggerFactory;
 import org.jetbrains.annotations.NotNull;
@@ -21,10 +20,14 @@ import java.util.stream.Collectors;
 public final class MessageListener extends ListenerAdapter {
   private final CoreModule coreModule;
   private final TriggerFactory triggerFactory;
+  private final JDA jda;
 
   @Override
   public void onMessageReceived(@NotNull MessageReceivedEvent event) {
     super.onMessageReceived(event);
+    if (event.getAuthor().equals(jda.getSelfUser())) {
+      return;
+    }
     findChannelMessageTriggers(event).thenAccept(entries ->
       executeWorkflows(entries, channelMessageInformation(event)));
     findPrivateMessageTriggers(event).thenAccept(entries ->
