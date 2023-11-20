@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.taskwolf.core.action.Action;
 import net.taskwolf.core.action.ActionInformation;
+import net.taskwolf.core.workflow.component.ComponentSelect;
 import net.taskwolf.core.workflow.component.ComponentType;
 import net.taskwolf.core.workflow.component.ComponentVariable;
 import org.json.JSONObject;
@@ -14,15 +15,17 @@ import java.util.Map;
 
 @AllArgsConstructor(staticName = "create")
 public final class ChannelMessageAction implements Action {
-  public static ActionInformation information() {
+  public static ActionInformation information(
+    ComponentSelect guildComponentSelect, ComponentSelect channelComponentSelect
+  ) {
     return ActionInformation.builder()
       .withName("Send channel message")
       .withDescription("Send channel message")
       .withIdentifier("discord-channel-message-action")
-      .withInputVariable(ComponentVariable.create("Guild Identifier",
-        "guildIdentifier", ComponentType.TEXT))
-      .withInputVariable(ComponentVariable.create("Channel Identifier",
-        "channelIdentifier", ComponentType.TEXT))
+      .withInputVariable(ComponentVariable.createSelect("Server",
+        "guildIdentifier", guildComponentSelect))
+      .withInputVariable(ComponentVariable.createSelect("Channel",
+        "channelIdentifier", channelComponentSelect))
       .withInputVariable(ComponentVariable.create("Message",
         "message", ComponentType.TEXT))
       .withOutputVariable(ComponentVariable.create("Channel Name",

@@ -1,6 +1,7 @@
 package net.taskwolf.discord;
 
 import com.google.common.collect.Lists;
+import net.dv8tion.jda.api.JDA;
 import net.taskwolf.core.CoreModule;
 import net.taskwolf.core.account.AccountLink;
 import net.taskwolf.core.action.ActionFactory;
@@ -12,6 +13,7 @@ import net.taskwolf.core.module.ModuleInformation;
 import net.taskwolf.core.module.ModuleLoadPriority;
 import net.taskwolf.core.trigger.TriggerFactory;
 import net.taskwolf.core.trigger.TriggerInformation;
+import net.taskwolf.core.workflow.component.ComponentSelect;
 import net.taskwolf.discord.access.GuildDatabaseTable;
 import net.taskwolf.discord.action.ChannelMessageAction;
 import net.taskwolf.discord.action.DiscordActionFactory;
@@ -20,8 +22,12 @@ import net.taskwolf.discord.trigger.ChannelMessageTrigger;
 import net.taskwolf.discord.trigger.DiscordTriggerFactory;
 import net.taskwolf.discord.trigger.MessageListener;
 import net.taskwolf.discord.trigger.PrivateMessageTrigger;
+import org.json.JSONObject;
 
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 @ModuleDescription(name = "discord", version = "1.0.0-SNAPSHOT",
   priority = ModuleLoadPriority.NEUTRAL)
@@ -31,6 +37,8 @@ public final class DiscordModule extends Module {
   private TriggerFactory triggerFactory;
   private ActionFactory actionFactory;
   private AccountLink accountLink;
+  private ComponentSelect guildComponentSelect;
+  private ComponentSelect channelComponentSelect;
   private DiscordBot discordBot;
 
   public DiscordModule(CoreModule coreModule) {
@@ -44,11 +52,29 @@ public final class DiscordModule extends Module {
       coreModule().databaseKeyspace());
     discordBot = DiscordBot.create(log, DiscordConfiguration.createAndLoad());
     discordBot.initialize();
+    var jda = discordBot.jda();
     triggerFactory = DiscordTriggerFactory.create();
-    actionFactory = DiscordActionFactory.create(discordBot.jda());
-    accountLink = DiscordAccountLink.create(discordBot.jda(), guildDatabaseTable);
-    discordBot.jda().addEventListener(MessageListener.create(coreModule(),
-      triggerFactory));
+    actionFactory = DiscordActionFactory.create(jda);
+    accountLink = DiscordAccountLink.create(jda, guildDatabaseTable);
+    guildComponentSelect = createGuildComponentSelect(jda, guildDatabaseTable);
+    channelComponentSelect = createChannelComponentSelect(jda);
+    jda.addEventListener(MessageListener.create(coreModule(), triggerFactory));
+  }
+
+  private ComponentSelect createGuildComponentSelect(
+    JDA jda, GuildDatabaseTable guildDatabaseTable
+  ) {
+    return (user, previousInputs) -> guildDatabaseTable.findGuilds(user)
+      .thenApply(guilds -> guilds.stream().map(guild ->
+        new JSONObject(Map.of("identifier", guild, "name",
+          jda.getGuildById(guild).getName())).toString()).collect(Collectors.toList()));
+  }
+
+  private ComponentSelect createChannelComponentSelect(JDA jda) {
+    return (user, previousInputs) -> CompletableFuture.completedFuture(
+      jda.getGuildById(previousInputs.get("guildIdentifier")).getTextChannels()
+        .stream().map(channel -> new JSONObject(Map.of("identifier", channel.getId(),
+          "name", channel.getName())).toString()).collect(Collectors.toList()));
   }
 
   @Override
@@ -79,13 +105,13 @@ public final class DiscordModule extends Module {
 
   @Override
   public List<TriggerInformation> triggerInformation() {
-    return Lists.newArrayList(ChannelMessageTrigger.information(discordBot.jda(),
-      guildDatabaseTable), PrivateMessageTrigger.information());
+    return Lists.newArrayList(ChannelMessageTrigger.information(guildComponentSelect,
+      channelComponentSelect), PrivateMessageTrigger.information());
   }
 
   @Override
   public List<ActionInformation> actionInformation() {
-    return Lists.newArrayList(ChannelMessageAction.information(),
-      PrivateMessageAction.information());
+    return Lists.newArrayList(ChannelMessageAction.information(guildComponentSelect,
+      channelComponentSelect), PrivateMessageAction.information());
   }
 }
