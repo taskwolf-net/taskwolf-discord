@@ -17,7 +17,7 @@ public final class DiscordActionFactory implements ActionFactory {
       return ChannelMessageAction.of(jda, json);
     }
     if (type.equals("discord-private-message-action")) {
-      return ChannelMessageAction.of(jda, json);
+      return PrivateMessageAction.of(jda, json);
     }
     return null;
   }
