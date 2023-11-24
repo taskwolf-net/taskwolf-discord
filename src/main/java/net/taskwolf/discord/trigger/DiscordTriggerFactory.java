@@ -9,7 +9,7 @@ import org.json.JSONObject;
 public class DiscordTriggerFactory implements TriggerFactory {
   @Override
   public Trigger create(String type, String content) {
-    JSONObject json = new JSONObject(content);
+    var json = new JSONObject(content);
     if (type.equals("discord-channel-message-trigger")) {
       return ChannelMessageTrigger.of(json);
     }

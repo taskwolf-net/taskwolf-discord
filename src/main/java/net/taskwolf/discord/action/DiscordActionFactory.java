@@ -12,7 +12,7 @@ public final class DiscordActionFactory implements ActionFactory {
 
   @Override
   public Action create(String type, String content) {
-    JSONObject json = new JSONObject(content);
+    var json = new JSONObject(content);
     if (type.equals("discord-channel-message-action")) {
       return ChannelMessageAction.of(jda, json);
     }
