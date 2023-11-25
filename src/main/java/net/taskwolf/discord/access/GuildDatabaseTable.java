@@ -8,7 +8,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 public final class GuildDatabaseTable extends DatabaseTable {
-  private static final String TABLE_NAME = "guilds";
+  private static final String TABLE_NAME = "discord_guild";
 
   public static GuildDatabaseTable create(
     DatabaseConnection connection, DatabaseKeyspace keyspace
