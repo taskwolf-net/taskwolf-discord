@@ -5,10 +5,13 @@ import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.JDA;
 import net.taskwolf.core.account.AccountLink;
 import net.taskwolf.discord.access.GuildDatabaseTable;
+import org.json.JSONObject;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor(staticName = "create")
 public final class DiscordAccountLink implements AccountLink {
@@ -21,6 +24,18 @@ public final class DiscordAccountLink implements AccountLink {
     guildDatabaseTable.userGuildsExists(userId).thenApply(exists ->
       checkGuildExistence(userId, exists).thenAccept(futureResponse::complete));
     return futureResponse;
+  }
+
+  @Override
+  public CompletableFuture<List<String>> findAccounts(UUID userId) {
+    return guildDatabaseTable.findGuilds(userId).thenApply(guilds ->
+      guilds.stream().map(guild -> new JSONObject(Map.of("identifier", guild, "name",
+        jda.getGuildById(guild).getName())).toString()).collect(Collectors.toList()));
+  }
+
+  @Override
+  public void removeAccount(UUID userId, String identifier) {
+    guildDatabaseTable.removeGuild(userId, identifier);
   }
 
   private CompletableFuture<Boolean> checkGuildExistence(
