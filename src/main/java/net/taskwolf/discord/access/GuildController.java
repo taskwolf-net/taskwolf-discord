@@ -24,17 +24,16 @@ public class GuildController extends TaskwolfRestController {
 
   @RequestMapping(path = "/discord/guild/add/", method = RequestMethod.GET)
   public void addGuild(
-    HttpServletRequest request, HttpServletResponse response, @RequestParam("state") String apiKey,
-    @RequestParam("guild_id") String guildId
-  ) {
+    HttpServletRequest request, HttpServletResponse response,
+    @RequestParam("state") String apiKey, @RequestParam("guild_id") String guildId
+  ) throws Exception {
+    response.setStatus(310);
     if (!isValidApiKey(apiKey)) {
       return;
     }
     var userId = findUserId(apiKey);
     guildDatabaseTable.userGuildsExists(userId).thenAccept(exists ->
       addGuild(userId, guildId, exists));
-    response.setHeader("Location", "https://google.com");
-    response.setStatus(302);
   }
 
   private void addGuild(UUID userId, String guildId, boolean userGuildsExists) {
