@@ -36,6 +36,7 @@ public final class DiscordAccountLink implements AccountLink {
   @Override
   public void removeAccount(UUID userId, String identifier) {
     guildDatabaseTable.removeGuild(userId, identifier);
+    jda.getGuildById(identifier).leave().queue();
   }
 
   private CompletableFuture<Boolean> checkGuildExistence(
