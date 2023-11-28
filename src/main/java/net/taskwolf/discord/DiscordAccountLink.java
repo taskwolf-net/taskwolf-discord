@@ -55,7 +55,7 @@ public final class DiscordAccountLink implements AccountLink {
     var botGuilds = jda.getGuilds();
     var removedGuilds = Lists.<String>newArrayList();
     for (var guild : guilds) {
-      if (botGuilds.stream().noneMatch(botBuild -> botBuild.getId().equals(guild))) {
+      if (botGuilds.stream().noneMatch(botGuild -> botGuild.getId().equals(guild))) {
         removedGuilds.add(guild);
       }
     }
