@@ -3,40 +3,34 @@ package net.taskwolf.discord.trigger;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
-import net.dv8tion.jda.api.JDA;
 import net.taskwolf.core.trigger.Trigger;
 import net.taskwolf.core.trigger.TriggerInformation;
-import net.taskwolf.core.workflow.component.ComponentSelect;
-import net.taskwolf.core.workflow.component.ComponentType;
-import net.taskwolf.core.workflow.component.ComponentVariable;
-import net.taskwolf.discord.access.GuildDatabaseTable;
+import net.taskwolf.core.workflow.component.input.InputComponentSelect;
+import net.taskwolf.core.workflow.component.input.InputComponentVariable;
+import net.taskwolf.core.workflow.component.output.OutputComponentVariable;
 import org.json.JSONObject;
-
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
 @Getter
 @Accessors(fluent = true)
 @RequiredArgsConstructor(staticName = "create")
 public final class ChannelMessageTrigger implements Trigger {
   public static TriggerInformation information(
-    ComponentSelect guildComponentSelect, ComponentSelect channelComponentSelect
+    InputComponentSelect guildComponentSelect,
+    InputComponentSelect channelComponentSelect
   ) {
     return TriggerInformation.builder()
       .withName("Receive new channel message")
       .withDescription("Receive new channel message")
       .withIdentifier("discord-channel-message-trigger")
-      .withInputVariable(ComponentVariable.createSelect("Server",
+      .withInputVariable(InputComponentVariable.createSelect("Server",
         "guildIdentifier", guildComponentSelect))
-      .withInputVariable(ComponentVariable.createSelect("Channel",
+      .withInputVariable(InputComponentVariable.createSelect("Channel",
         "channelIdentifier", channelComponentSelect))
-      .withOutputVariable(ComponentVariable.create("Message",
-        "message", ComponentType.TEXT))
-      .withOutputVariable(ComponentVariable.create("Message Author Identifier",
-        "messageAuthorIdentifier", ComponentType.TEXT))
-      .withOutputVariable(ComponentVariable.create("Message Author Name",
-        "messageAuthorName", ComponentType.TEXT)).build();
+      .withOutputVariable(OutputComponentVariable.create("Message", "message"))
+      .withOutputVariable(OutputComponentVariable.create("Message Author Identifier",
+        "messageAuthorIdentifier"))
+      .withOutputVariable(OutputComponentVariable.create("Message Author Name",
+        "messageAuthorName")).build();
   }
 
   public static ChannelMessageTrigger of(JSONObject content) {

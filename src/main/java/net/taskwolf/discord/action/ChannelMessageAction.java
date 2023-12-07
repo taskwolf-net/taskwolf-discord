@@ -6,9 +6,10 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.taskwolf.core.action.Action;
 import net.taskwolf.core.action.ActionInformation;
-import net.taskwolf.core.workflow.component.ComponentSelect;
-import net.taskwolf.core.workflow.component.ComponentType;
-import net.taskwolf.core.workflow.component.ComponentVariable;
+import net.taskwolf.core.workflow.component.input.InputComponentDataType;
+import net.taskwolf.core.workflow.component.input.InputComponentSelect;
+import net.taskwolf.core.workflow.component.input.InputComponentVariable;
+import net.taskwolf.core.workflow.component.output.OutputComponentVariable;
 import org.json.JSONObject;
 
 import java.util.Map;
@@ -16,20 +17,21 @@ import java.util.Map;
 @AllArgsConstructor(staticName = "create")
 public final class ChannelMessageAction implements Action {
   public static ActionInformation information(
-    ComponentSelect guildComponentSelect, ComponentSelect channelComponentSelect
+    InputComponentSelect guildComponentSelect, InputComponentSelect channelComponentSelect
   ) {
     return ActionInformation.builder()
       .withName("Send channel message")
       .withDescription("Send channel message")
       .withIdentifier("discord-channel-message-action")
-      .withInputVariable(ComponentVariable.createSelect("Server",
+      .withInputVariable(InputComponentVariable.createSelect("Server",
         "guildIdentifier", guildComponentSelect))
-      .withInputVariable(ComponentVariable.createSelect("Channel",
+      .withInputVariable(InputComponentVariable.createSelect("Channel",
         "channelIdentifier", channelComponentSelect))
-      .withInputVariable(ComponentVariable.create("Message",
-        "message", ComponentType.TEXT))
-      .withOutputVariable(ComponentVariable.create("Channel Name",
-        "channelName", ComponentType.TEXT)).build();
+      .withInputVariable(InputComponentVariable.createRequired("Message",
+        "message", InputComponentDataType.TEXT))
+      .withOutputVariable(OutputComponentVariable.create("Message", "message"))
+      .withOutputVariable(OutputComponentVariable.create("Channel Name",
+        "channelName")).build();
   }
 
   public static ChannelMessageAction of(JDA jda, JSONObject content) {
@@ -54,10 +56,8 @@ public final class ChannelMessageAction implements Action {
 
   private Map<String, Object> buildInformation(TextChannel channel) {
     var information = Maps.<String, Object>newHashMap();
-    information.put("guildIdentifier", guildIdentifier);
-    information.put("channelIdentifier", channelIdentifier);
-    information.put("channelName", channel.getName());
     information.put("message", message);
+    information.put("channelName", channel.getName());
     return information;
   }
 }

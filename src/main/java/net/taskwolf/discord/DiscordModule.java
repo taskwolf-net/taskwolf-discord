@@ -13,7 +13,7 @@ import net.taskwolf.core.module.ModuleInformation;
 import net.taskwolf.core.module.ModuleLoadPriority;
 import net.taskwolf.core.trigger.TriggerFactory;
 import net.taskwolf.core.trigger.TriggerInformation;
-import net.taskwolf.core.workflow.component.ComponentSelect;
+import net.taskwolf.core.workflow.component.input.InputComponentSelect;
 import net.taskwolf.discord.access.GuildDatabaseTable;
 import net.taskwolf.discord.action.ChannelMessageAction;
 import net.taskwolf.discord.action.DiscordActionFactory;
@@ -37,8 +37,8 @@ public final class DiscordModule extends Module {
   private TriggerFactory triggerFactory;
   private ActionFactory actionFactory;
   private AccountLink accountLink;
-  private ComponentSelect guildComponentSelect;
-  private ComponentSelect channelComponentSelect;
+  private InputComponentSelect guildComponentSelect;
+  private InputComponentSelect channelComponentSelect;
   private DiscordBot discordBot;
 
   public DiscordModule(CoreModule coreModule) {
@@ -61,7 +61,7 @@ public final class DiscordModule extends Module {
     jda.addEventListener(MessageListener.create(coreModule(), triggerFactory, jda));
   }
 
-  private ComponentSelect createGuildComponentSelect(
+  private InputComponentSelect createGuildComponentSelect(
     JDA jda, GuildDatabaseTable guildDatabaseTable
   ) {
     return (user, previousInputs) -> guildDatabaseTable.findGuilds(user)
@@ -70,7 +70,7 @@ public final class DiscordModule extends Module {
           jda.getGuildById(guild).getName())).toString()).collect(Collectors.toList()));
   }
 
-  private ComponentSelect createChannelComponentSelect(JDA jda) {
+  private InputComponentSelect createChannelComponentSelect(JDA jda) {
     return (user, previousInputs) -> CompletableFuture.completedFuture(
       jda.getGuildById(previousInputs.get("guildIdentifier")).getTextChannels()
         .stream().map(channel -> new JSONObject(Map.of("identifier", channel.getId(),

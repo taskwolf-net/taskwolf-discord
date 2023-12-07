@@ -1,13 +1,13 @@
 package net.taskwolf.discord.trigger;
 
-
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
 import net.taskwolf.core.trigger.Trigger;
 import net.taskwolf.core.trigger.TriggerInformation;
-import net.taskwolf.core.workflow.component.ComponentType;
-import net.taskwolf.core.workflow.component.ComponentVariable;
+import net.taskwolf.core.workflow.component.input.InputComponentDataType;
+import net.taskwolf.core.workflow.component.input.InputComponentVariable;
+import net.taskwolf.core.workflow.component.output.OutputComponentVariable;
 import org.json.JSONObject;
 
 @Getter
@@ -19,12 +19,10 @@ public final class PrivateMessageTrigger implements Trigger {
       .withName("Receive new private message")
       .withDescription("Receive new private message")
       .withIdentifier("discord-private-message-trigger")
-      .withInputVariable(ComponentVariable.create("Author Identifier",
-        "authorIdentifier", ComponentType.TEXT))
-      .withOutputVariable(ComponentVariable.create("Author Name",
-        "authorName", ComponentType.TEXT))
-      .withOutputVariable(ComponentVariable.create("Message",
-        "message", ComponentType.TEXT)).build();
+      .withInputVariable(InputComponentVariable.createRequired("Author Identifier",
+        "authorIdentifier", InputComponentDataType.TEXT))
+      .withOutputVariable(OutputComponentVariable.create("Author Name", "authorName"))
+      .withOutputVariable(OutputComponentVariable.create("Message", "message")).build();
   }
 
   public static PrivateMessageTrigger of(JSONObject content) {

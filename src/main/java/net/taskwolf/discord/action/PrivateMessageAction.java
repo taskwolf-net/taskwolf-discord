@@ -6,8 +6,9 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.User;
 import net.taskwolf.core.action.Action;
 import net.taskwolf.core.action.ActionInformation;
-import net.taskwolf.core.workflow.component.ComponentType;
-import net.taskwolf.core.workflow.component.ComponentVariable;
+import net.taskwolf.core.workflow.component.input.InputComponentDataType;
+import net.taskwolf.core.workflow.component.input.InputComponentVariable;
+import net.taskwolf.core.workflow.component.output.OutputComponentVariable;
 import org.json.JSONObject;
 
 import java.util.Map;
@@ -19,12 +20,13 @@ public class PrivateMessageAction implements Action {
       .withName("Send private message")
       .withDescription("Send private message")
       .withIdentifier("discord-private-message-action")
-      .withInputVariable(ComponentVariable.create("User Identifier",
-        "userIdentifier", ComponentType.TEXT))
-      .withInputVariable(ComponentVariable.create("Message",
-        "message", ComponentType.TEXT))
-      .withOutputVariable(ComponentVariable.create("User Name",
-        "userName", ComponentType.TEXT)).build();
+      .withInputVariable(InputComponentVariable.createRequired("User Identifier",
+        "userIdentifier", InputComponentDataType.TEXT))
+      .withInputVariable(InputComponentVariable.createRequired("Message",
+        "message", InputComponentDataType.TEXT))
+      .withOutputVariable(OutputComponentVariable.create("User Identifier", "userIdentifier"))
+      .withOutputVariable(OutputComponentVariable.create("Message", "message"))
+      .withOutputVariable(OutputComponentVariable.create("User Name", "userName")).build();
   }
 
   public static PrivateMessageAction of(JDA jda, JSONObject content) {
@@ -50,8 +52,8 @@ public class PrivateMessageAction implements Action {
   private Map<String, Object> buildInformation(User user) {
     var information = Maps.<String, Object>newHashMap();
     information.put("userIdentifier", userIdentifier);
-    information.put("userName", user.getName());
     information.put("message", message);
+    information.put("userName", user.getName());
     return information;
   }
 }

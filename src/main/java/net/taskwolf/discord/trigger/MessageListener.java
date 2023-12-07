@@ -84,8 +84,6 @@ public final class MessageListener extends ListenerAdapter {
 
   private Map<String, Object> channelMessageInformation(MessageReceivedEvent event) {
     var information = Maps.<String, Object>newHashMap();
-    information.put("guildIdentifier", event.getGuild().getId());
-    information.put("channelIdentifier", event.getChannel().getId());
     information.put("message", event.getMessage().getContentRaw());
     information.put("messageAuthorIdentifier", event.getAuthor().getId());
     information.put("messageAuthorName", event.getAuthor().getName());
@@ -94,7 +92,6 @@ public final class MessageListener extends ListenerAdapter {
 
   private Map<String, Object> privateMessageInformation(MessageReceivedEvent event) {
     var information = Maps.<String, Object>newHashMap();
-    information.put("authorIdentifier", event.getAuthor().getId());
     information.put("authorName", event.getAuthor().getName());
     information.put("message", event.getMessage().getContentRaw());
     return information;
