@@ -21,9 +21,9 @@ public class PrivateMessageAction implements Action {
       .withDescription("Send private message")
       .withIdentifier("discord-private-message-action")
       .withInputVariable(InputComponentVariable.createRequired("User Identifier",
-        "userIdentifier", InputComponentDataType.TEXT))
+        "userIdentifier", "The user to which the message is to be sent", InputComponentDataType.TEXT))
       .withInputVariable(InputComponentVariable.createRequired("Message",
-        "message", InputComponentDataType.TEXT))
+        "message", "The message to be sent", InputComponentDataType.TEXT))
       .withOutputVariable(OutputComponentVariable.create("User Identifier", "userIdentifier"))
       .withOutputVariable(OutputComponentVariable.create("Message", "message"))
       .withOutputVariable(OutputComponentVariable.create("User Name", "userName")).build();

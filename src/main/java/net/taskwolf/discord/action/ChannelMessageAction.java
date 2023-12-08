@@ -24,11 +24,11 @@ public final class ChannelMessageAction implements Action {
       .withDescription("Send channel message")
       .withIdentifier("discord-channel-message-action")
       .withInputVariable(InputComponentVariable.createSelect("Server",
-        "guildIdentifier", guildComponentSelect))
+        "guildIdentifier", "The server on which the message is to be sent", guildComponentSelect))
       .withInputVariable(InputComponentVariable.createSelect("Channel",
-        "channelIdentifier", channelComponentSelect))
+        "channelIdentifier", "The channel in which the message is to be sent", channelComponentSelect))
       .withInputVariable(InputComponentVariable.createRequired("Message",
-        "message", InputComponentDataType.TEXT))
+        "message", "The message to be sent", InputComponentDataType.TEXT))
       .withOutputVariable(OutputComponentVariable.create("Message", "message"))
       .withOutputVariable(OutputComponentVariable.create("Channel Name",
         "channelName")).build();

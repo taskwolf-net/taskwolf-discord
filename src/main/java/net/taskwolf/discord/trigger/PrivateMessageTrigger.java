@@ -20,7 +20,7 @@ public final class PrivateMessageTrigger implements Trigger {
       .withDescription("Receive new private message")
       .withIdentifier("discord-private-message-trigger")
       .withInputVariable(InputComponentVariable.createRequired("Author Identifier",
-        "authorIdentifier", InputComponentDataType.TEXT))
+        "authorIdentifier", "The id of the user that send the message", InputComponentDataType.TEXT))
       .withOutputVariable(OutputComponentVariable.create("Author Name", "authorName"))
       .withOutputVariable(OutputComponentVariable.create("Message", "message")).build();
   }

@@ -23,9 +23,9 @@ public final class ChannelMessageTrigger implements Trigger {
       .withDescription("Receive new channel message")
       .withIdentifier("discord-channel-message-trigger")
       .withInputVariable(InputComponentVariable.createSelect("Server",
-        "guildIdentifier", guildComponentSelect))
+        "guildIdentifier", "The server on which the message is to be received", guildComponentSelect))
       .withInputVariable(InputComponentVariable.createSelect("Channel",
-        "channelIdentifier", channelComponentSelect))
+        "channelIdentifier", "The channel on which the message is to be received", channelComponentSelect))
       .withOutputVariable(OutputComponentVariable.create("Message", "message"))
       .withOutputVariable(OutputComponentVariable.create("Message Author Identifier",
         "messageAuthorIdentifier"))
