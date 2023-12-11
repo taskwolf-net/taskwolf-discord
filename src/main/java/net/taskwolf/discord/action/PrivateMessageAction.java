@@ -9,6 +9,7 @@ import net.taskwolf.core.action.ActionInformation;
 import net.taskwolf.core.workflow.component.input.InputComponentDataType;
 import net.taskwolf.core.workflow.component.input.InputComponentVariable;
 import net.taskwolf.core.workflow.component.output.OutputComponentVariable;
+import net.taskwolf.core.workflow.placeholder.PlaceholderDissolve;
 import org.json.JSONObject;
 
 import java.util.Map;
@@ -40,9 +41,8 @@ public class PrivateMessageAction implements Action {
 
   @Override
   public Map<String, Object> execute(Map<String, Object> information) {
-    for (var entry : information.entrySet()) {
-      message = message.replace("$" + entry.getKey(), entry.getValue().toString());
-    }
+    var placeholderDissolve = PlaceholderDissolve.create(information);
+    message = placeholderDissolve.dissolve(message);
     var user = jda.getUserById(userIdentifier);
     user.openPrivateChannel().flatMap(channel -> channel.sendMessage(message))
       .queue();

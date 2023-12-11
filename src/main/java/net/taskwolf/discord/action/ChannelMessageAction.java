@@ -10,6 +10,7 @@ import net.taskwolf.core.workflow.component.input.InputComponentDataType;
 import net.taskwolf.core.workflow.component.input.InputComponentSelect;
 import net.taskwolf.core.workflow.component.input.InputComponentVariable;
 import net.taskwolf.core.workflow.component.output.OutputComponentVariable;
+import net.taskwolf.core.workflow.placeholder.PlaceholderDissolve;
 import org.json.JSONObject;
 
 import java.util.Map;
@@ -46,9 +47,8 @@ public final class ChannelMessageAction implements Action {
 
   @Override
   public Map<String, Object> execute(Map<String, Object> information) {
-    for (var entry : information.entrySet()) {
-      message = message.replace("$" + entry.getKey(), entry.getValue().toString());
-    }
+    var placeholderDissolve = PlaceholderDissolve.create(information);
+    message = placeholderDissolve.dissolve(message);
     var channel = jda.getTextChannelById(channelIdentifier);
     channel.sendMessage(message).queue();
     return buildInformation(channel);
