@@ -30,8 +30,6 @@ public final class MessageListener extends ListenerAdapter {
     }
     findChannelMessageTriggers(event).thenAccept(entries ->
       executeWorkflows(entries, channelMessageInformation(event)));
-    findPrivateMessageTriggers(event).thenAccept(entries ->
-      executeWorkflows(entries, privateMessageInformation(event)));
   }
 
   private CompletableFuture<List<TriggerEntry>> findChannelMessageTriggers(
@@ -54,25 +52,6 @@ public final class MessageListener extends ListenerAdapter {
       event.getChannel().getId().equals(channelMessageTrigger.channelIdentifier());
   }
 
-  private CompletableFuture<List<TriggerEntry>> findPrivateMessageTriggers(
-    MessageReceivedEvent event
-  ) {
-    return coreModule.findTriggerEntries("discord", "discord-private-message-trigger")
-      .thenApply(entries -> entries.stream().filter(entry ->
-        privateMessageSuitability(entry, event)).collect(Collectors.toList()));
-  }
-
-  private boolean privateMessageSuitability(
-    TriggerEntry trigger, MessageReceivedEvent event
-  ) {
-    if (event.getChannelType() != ChannelType.PRIVATE) {
-      return false;
-    }
-    var privateMessageTrigger = (PrivateMessageTrigger)
-      triggerFactory.create(trigger.type(), trigger.content());
-    return event.getAuthor().getId().equals(privateMessageTrigger.authorIdentifier());
-  }
-
   private void executeWorkflows(
     List<TriggerEntry> entries, Map<String, Object> information
   ) {
@@ -87,13 +66,6 @@ public final class MessageListener extends ListenerAdapter {
     information.put("message", event.getMessage().getContentRaw());
     information.put("messageAuthorIdentifier", event.getAuthor().getId());
     information.put("messageAuthorName", event.getAuthor().getName());
-    return information;
-  }
-
-  private Map<String, Object> privateMessageInformation(MessageReceivedEvent event) {
-    var information = Maps.<String, Object>newHashMap();
-    information.put("authorName", event.getAuthor().getName());
-    information.put("message", event.getMessage().getContentRaw());
     return information;
   }
 }

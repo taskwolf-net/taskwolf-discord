@@ -17,11 +17,9 @@ import net.taskwolf.core.workflow.component.input.InputComponentSelect;
 import net.taskwolf.discord.access.GuildDatabaseTable;
 import net.taskwolf.discord.action.ChannelMessageAction;
 import net.taskwolf.discord.action.DiscordActionFactory;
-import net.taskwolf.discord.action.PrivateMessageAction;
 import net.taskwolf.discord.trigger.ChannelMessageTrigger;
 import net.taskwolf.discord.trigger.DiscordTriggerFactory;
 import net.taskwolf.discord.trigger.MessageListener;
-import net.taskwolf.discord.trigger.PrivateMessageTrigger;
 import org.json.JSONObject;
 
 import java.util.List;
@@ -106,12 +104,12 @@ public final class DiscordModule extends Module {
   @Override
   public List<TriggerInformation> triggerInformation() {
     return Lists.newArrayList(ChannelMessageTrigger.information(guildComponentSelect,
-      channelComponentSelect), PrivateMessageTrigger.information());
+      channelComponentSelect));
   }
 
   @Override
   public List<ActionInformation> actionInformation() {
     return Lists.newArrayList(ChannelMessageAction.information(guildComponentSelect,
-      channelComponentSelect), PrivateMessageAction.information());
+      channelComponentSelect));
   }
 }

@@ -13,9 +13,6 @@ public class DiscordTriggerFactory implements TriggerFactory {
     if (type.equals("discord-channel-message-trigger")) {
       return ChannelMessageTrigger.of(json);
     }
-    if (type.equals("discord-private-message-trigger")) {
-      return PrivateMessageTrigger.of(json);
-    }
     return null;
   }
 }
