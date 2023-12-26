@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.taskwolf.core.action.Action;
 import net.taskwolf.core.action.ActionInformation;
+import net.taskwolf.core.action.ActionResult;
 import net.taskwolf.core.workflow.component.input.InputComponentDataType;
 import net.taskwolf.core.workflow.component.input.InputComponentSelect;
 import net.taskwolf.core.workflow.component.input.InputComponentVariable;
@@ -46,12 +47,22 @@ public final class ChannelMessageAction implements Action {
   private String message;
 
   @Override
-  public Map<String, Object> execute(Map<String, Object> information) {
+  public ActionResult execute(Map<String, Object> information) {
+    if (jda.getGuildById(guildIdentifier) == null) {
+      return ActionResult.failure("An error occurred while sending a discord " +
+        "channel message. The error occurred because the selected server " +
+        "could not be found");
+    }
     var placeholderDissolve = PlaceholderDissolve.create(information);
     message = placeholderDissolve.dissolve(message);
     var channel = jda.getTextChannelById(channelIdentifier);
+    if (channel == null) {
+      return ActionResult.failure("An error occurred while sending a " +
+        "discord channel message. The error occurred because the selected " +
+        "channel could not be found");
+    }
     channel.sendMessage(message).queue();
-    return buildInformation(channel);
+    return ActionResult.success(buildInformation(channel));
   }
 
   private Map<String, Object> buildInformation(TextChannel channel) {
