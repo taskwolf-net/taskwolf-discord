@@ -19,23 +19,23 @@ public final class DiscordAccountLink implements AccountLink {
   private final GuildDatabaseTable guildDatabaseTable;
 
   @Override
-  public CompletableFuture<Boolean> accountExists(UUID userId) {
+  public CompletableFuture<Boolean> accountExists(UUID id) {
     var futureResponse = new CompletableFuture<Boolean>();
-    guildDatabaseTable.userGuildsExists(userId).thenApply(exists ->
-      checkGuildExistence(userId, exists).thenAccept(futureResponse::complete));
+    guildDatabaseTable.userGuildsExists(id).thenApply(exists ->
+      checkGuildExistence(id, exists).thenAccept(futureResponse::complete));
     return futureResponse;
   }
 
   @Override
-  public CompletableFuture<List<String>> findAccounts(UUID userId) {
-    return guildDatabaseTable.findGuilds(userId).thenApply(guilds ->
+  public CompletableFuture<List<String>> findAccounts(UUID id) {
+    return guildDatabaseTable.findGuilds(id).thenApply(guilds ->
       guilds.stream().map(guild -> new JSONObject(Map.of("identifier", guild, "name",
         jda.getGuildById(guild).getName())).toString()).collect(Collectors.toList()));
   }
 
   @Override
-  public void removeAccount(UUID userId, String identifier) {
-    guildDatabaseTable.removeGuild(userId, identifier);
+  public void removeAccount(UUID id, String identifier) {
+    guildDatabaseTable.removeGuild(id, identifier);
     jda.getGuildById(identifier).leave().queue();
   }
 
@@ -51,7 +51,7 @@ public final class DiscordAccountLink implements AccountLink {
     return futureResponse;
   }
 
-  private boolean removeInactiveGuilds(UUID userId, List<String> guilds) {
+  private boolean removeInactiveGuilds(UUID id, List<String> guilds) {
     var botGuilds = jda.getGuilds();
     var removedGuilds = Lists.<String>newArrayList();
     for (var guild : guilds) {
@@ -61,16 +61,16 @@ public final class DiscordAccountLink implements AccountLink {
     }
     guilds.removeAll(removedGuilds);
     if (!removedGuilds.isEmpty()) {
-      guildDatabaseTable.updateUserGuilds(userId, guilds);
+      guildDatabaseTable.updateUserGuilds(id, guilds);
     }
     return !guilds.isEmpty();
   }
 
-  private static final String DISCORD_REGISTRATION_URL = "https://discord.com/api/oauth2/authorize?client_id=1160570527224701048&permissions=8&redirect_uri=https%3A%2F%2Fapi.taskwolf.net%2Fdiscord%2Fguild%2Fadd%2F&state=API-KEY&response_type=code&scope=guilds%20bot%20identify";
+  private static final String DISCORD_REGISTRATION_URL = "https://discord.com/api/oauth2/authorize?client_id=1160570527224701048&permissions=8&redirect_uri=https%3A%2F%2Fapi.taskwolf.net%2Fdiscord%2Fguild%2Fadd%2F&state=TASKWOLF-STATE&response_type=code&scope=guilds%20bot%20identify";
 
   @Override
-  public String registrationUrl(String apiKey) {
-    return DISCORD_REGISTRATION_URL.replace("API-KEY", apiKey);
+  public String registrationUrl(UUID id, String apiKey) {
+    return DISCORD_REGISTRATION_URL.replace("TASKWOLF-STATE", apiKey + id.toString());
   }
 
   @Override

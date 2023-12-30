@@ -25,30 +25,31 @@ public class GuildController extends TaskwolfRestController {
   @RequestMapping(path = "/discord/guild/add/", method = RequestMethod.GET)
   public void addGuild(
     HttpServletRequest request, HttpServletResponse response,
-    @RequestParam("state") String apiKey, @RequestParam("guild_id") String guildId
+    @RequestParam("state") String state, @RequestParam("guild_id") String guildId
   ) throws Exception {
     response.setStatus(310);
+    var apiKey = state.substring(0, 232);
     if (!isValidApiKey(apiKey)) {
       return;
     }
-    var userId = findUserId(apiKey);
-    guildDatabaseTable.userGuildsExists(userId).thenAccept(exists ->
-      addGuild(userId, guildId, exists));
+    var id = UUID.fromString(state.substring(232));
+    guildDatabaseTable.userGuildsExists(id).thenAccept(exists ->
+      addGuild(id, guildId, exists));
   }
 
-  private void addGuild(UUID userId, String guildId, boolean userGuildsExists) {
+  private void addGuild(UUID id, String guildId, boolean userGuildsExists) {
     if (!userGuildsExists) {
-      guildDatabaseTable.addGuild(userId, guildId);
+      guildDatabaseTable.addGuild(id, guildId);
       return;
     }
-    guildDatabaseTable.findGuilds(userId).thenAccept(guilds ->
-      addGuild(userId, guildId, guilds));
+    guildDatabaseTable.findGuilds(id).thenAccept(guilds ->
+      addGuild(id, guildId, guilds));
   }
 
-  private void addGuild(UUID userId, String guildId, List<String> guilds) {
+  private void addGuild(UUID id, String guildId, List<String> guilds) {
     if (guilds.contains(guildId)) {
       return;
     }
-    guildDatabaseTable.addGuild(userId, guildId);
+    guildDatabaseTable.addGuild(id, guildId);
   }
 }
