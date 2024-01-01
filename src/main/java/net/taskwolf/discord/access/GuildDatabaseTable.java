@@ -2,10 +2,12 @@ package net.taskwolf.discord.access;
 
 import com.google.common.collect.Lists;
 import net.taskwolf.core.database.*;
+import net.taskwolf.core.template.Template;
 
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 public final class GuildDatabaseTable extends DatabaseTable {
   private static final String TABLE_NAME = "discord_guild";
@@ -76,6 +78,11 @@ public final class GuildDatabaseTable extends DatabaseTable {
 
   public CompletableFuture<Boolean> userGuildsExists(UUID userId) {
     return exists(DatabaseCell.create(userId));
+  }
+
+  public CompletableFuture<Integer> guildOccurNumber(String guildId) {
+    return selectRows("guilds CONTAINS '" + guildId + "'")
+      .thenApply(List::size);
   }
 
   public CompletableFuture<List<String>> findGuilds(UUID userId) {

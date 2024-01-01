@@ -3,6 +3,7 @@ package net.taskwolf.discord;
 import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.ISnowflake;
 import net.taskwolf.core.account.AccountLink;
 import net.taskwolf.discord.access.GuildDatabaseTable;
 import org.json.JSONObject;
@@ -35,8 +36,17 @@ public final class DiscordAccountLink implements AccountLink {
 
   @Override
   public void removeAccount(UUID id, String identifier) {
-    guildDatabaseTable.removeGuild(id, identifier);
-    jda.getGuildById(identifier).leave().queue();
+    guildDatabaseTable.guildOccurNumber(identifier).thenAccept(number ->
+      removeAccount(id, identifier, number));
+  }
+
+  private void removeAccount(
+    UUID id, String guildIdentifier, int guildOccurNumber
+  ) {
+    if (guildOccurNumber == 1) {
+      jda.getGuildById(guildIdentifier).leave().queue();
+    }
+    guildDatabaseTable.removeGuild(id, guildIdentifier);
   }
 
   private CompletableFuture<Boolean> checkGuildExistence(
@@ -70,7 +80,7 @@ public final class DiscordAccountLink implements AccountLink {
 
   @Override
   public String registrationUrl(UUID id, String apiKey) {
-    return DISCORD_REGISTRATION_URL.replace("TASKWOLF-STATE", apiKey + id.toString());
+    return DISCORD_REGISTRATION_URL.replace("TASKWOLF-STATE", apiKey + "TASKWOLF-STATE-SPLIT" + id.toString());
   }
 
   @Override

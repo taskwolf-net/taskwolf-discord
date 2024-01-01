@@ -26,5 +26,6 @@ public class DiscordSpringConfiguration {
     guildDatabaseTable = GuildDatabaseTable.create(databaseConnection,
       databaseKeyspace);
     guildDatabaseTable.createIfNotExists();
+    guildDatabaseTable.createIndexIfNotExists("guilds");
   }
 }
