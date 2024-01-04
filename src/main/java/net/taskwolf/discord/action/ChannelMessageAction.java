@@ -22,17 +22,17 @@ public final class ChannelMessageAction implements Action {
     InputComponentSelect guildComponentSelect, InputComponentSelect channelComponentSelect
   ) {
     return ActionInformation.builder()
-      .withName("Send channel message")
-      .withDescription("Send channel message")
+      .withName("discord.action.channel.message.name")
+      .withDescription("discord.action.channel.message.description")
       .withIdentifier("discord-channel-message-action")
-      .withInputVariable(InputComponentVariable.createSelect("Server",
-        "guildIdentifier", "The server on which the message is to be sent", guildComponentSelect))
-      .withInputVariable(InputComponentVariable.createSelect("Channel",
-        "channelIdentifier", "The channel in which the message is to be sent", channelComponentSelect))
-      .withInputVariable(InputComponentVariable.createRequired("Message",
-        "message", "The message to be sent", InputComponentDataType.TEXT))
-      .withOutputVariable(OutputComponentVariable.create("Message", "message"))
-      .withOutputVariable(OutputComponentVariable.create("Channel Name",
+      .withInputVariable(InputComponentVariable.createSelect("discord.action.channel.message.input.server.name",
+        "guildIdentifier", "discord.action.channel.message.input.server.description", guildComponentSelect))
+      .withInputVariable(InputComponentVariable.createSelect("discord.action.channel.message.input.channel.name",
+        "channelIdentifier", "discord.action.channel.message.input.channel.description", channelComponentSelect))
+      .withInputVariable(InputComponentVariable.createRequired("discord.action.channel.message.input.message.name",
+        "message", "discord.action.channel.message.input.message.description", InputComponentDataType.TEXT))
+      .withOutputVariable(OutputComponentVariable.create("discord.action.channel.message.output.message", "message"))
+      .withOutputVariable(OutputComponentVariable.create("discord.action.channel.message.output.channel.name",
         "channelName")).build();
   }
 
@@ -49,17 +49,13 @@ public final class ChannelMessageAction implements Action {
   @Override
   public ActionResult execute(Map<String, Object> information) {
     if (jda.getGuildById(guildIdentifier) == null) {
-      return ActionResult.failure("An error occurred while sending a discord " +
-        "channel message. The error occurred because the selected server " +
-        "could not be found");
+      return ActionResult.failure("discord.action.channel.message.failure.server.not.found");
     }
     var placeholderDissolve = PlaceholderDissolve.create(information);
     message = placeholderDissolve.dissolve(message);
     var channel = jda.getTextChannelById(channelIdentifier);
     if (channel == null) {
-      return ActionResult.failure("An error occurred while sending a " +
-        "discord channel message. The error occurred because the selected " +
-        "channel could not be found");
+      return ActionResult.failure("discord.action.channel.message.failure.channel.not.found");
     }
     channel.sendMessage(message).queue();
     return ActionResult.success(buildInformation(channel));

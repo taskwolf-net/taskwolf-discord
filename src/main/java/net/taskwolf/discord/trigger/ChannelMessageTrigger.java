@@ -19,17 +19,18 @@ public final class ChannelMessageTrigger implements Trigger {
     InputComponentSelect channelComponentSelect
   ) {
     return TriggerInformation.builder()
-      .withName("Receive new channel message")
-      .withDescription("Receive new channel message")
+      .withName("discord.trigger.channel.message.name")
+      .withDescription("discord.trigger.channel.message.description")
       .withIdentifier("discord-channel-message-trigger")
-      .withInputVariable(InputComponentVariable.createSelect("Server",
-        "guildIdentifier", "The server on which the message is to be received", guildComponentSelect))
-      .withInputVariable(InputComponentVariable.createSelect("Channel",
-        "channelIdentifier", "The channel on which the message is to be received", channelComponentSelect))
-      .withOutputVariable(OutputComponentVariable.create("Message", "message"))
-      .withOutputVariable(OutputComponentVariable.create("Message Author Identifier",
+      .withInputVariable(InputComponentVariable.createSelect("discord.trigger.channel.message.input.server.name",
+        "guildIdentifier", "discord.trigger.channel.message.input.server.description", guildComponentSelect))
+      .withInputVariable(InputComponentVariable.createSelect("discord.trigger.channel.message.input.channel.name",
+        "channelIdentifier", "discord.trigger.channel.message.input.channel.description", channelComponentSelect))
+      .withOutputVariable(OutputComponentVariable.create("discord.trigger.channel.message.output.message",
+        "message"))
+      .withOutputVariable(OutputComponentVariable.create("discord.trigger.channel.message.output.message.author.identifier",
         "messageAuthorIdentifier"))
-      .withOutputVariable(OutputComponentVariable.create("Message Author Name",
+      .withOutputVariable(OutputComponentVariable.create("discord.trigger.channel.message.output.message.author.name",
         "messageAuthorName")).build();
   }
 

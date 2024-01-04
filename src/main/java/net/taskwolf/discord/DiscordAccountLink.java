@@ -85,6 +85,6 @@ public final class DiscordAccountLink implements AccountLink {
 
   @Override
   public String description() {
-    return "Would you like to add another Discord server to integrate it into your automation with the help of Taskwolf? Just click on the logo.";
+    return "discord.account.link.description";
   }
 }
