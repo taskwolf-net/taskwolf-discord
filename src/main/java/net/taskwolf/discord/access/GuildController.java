@@ -28,7 +28,7 @@ public class GuildController extends TaskwolfRestController {
     HttpServletRequest request, HttpServletResponse response,
     @RequestParam("state") String state, @RequestParam("guild_id") String guildId
   ) throws Exception {
-    response.setStatus(310);
+    response.sendRedirect("https://taskwolf.net/close/");
     var splitted = state.split("TASKWOLF-STATE-SPLIT");
     var apiKey = splitted[0];
     if (!isValidApiKey(apiKey)) {
