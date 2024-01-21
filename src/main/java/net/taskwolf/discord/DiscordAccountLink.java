@@ -3,9 +3,8 @@ package net.taskwolf.discord;
 import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.ISnowflake;
 import net.taskwolf.core.account.AccountLink;
-import net.taskwolf.discord.access.GuildDatabaseTable;
+import net.taskwolf.discord.guild.GuildDatabaseTable;
 import org.json.JSONObject;
 
 import java.util.List;

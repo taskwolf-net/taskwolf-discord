@@ -3,7 +3,7 @@ package net.taskwolf.discord;
 import jakarta.annotation.PostConstruct;
 import net.taskwolf.core.database.DatabaseConnection;
 import net.taskwolf.core.database.DatabaseKeyspace;
-import net.taskwolf.discord.access.GuildDatabaseTable;
+import net.taskwolf.discord.guild.GuildDatabaseTable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

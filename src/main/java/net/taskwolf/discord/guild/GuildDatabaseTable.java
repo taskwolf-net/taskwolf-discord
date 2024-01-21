@@ -1,13 +1,11 @@
-package net.taskwolf.discord.access;
+package net.taskwolf.discord.guild;
 
 import com.google.common.collect.Lists;
 import net.taskwolf.core.database.*;
-import net.taskwolf.core.template.Template;
 
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
 public final class GuildDatabaseTable extends DatabaseTable {
   private static final String TABLE_NAME = "discord_guild";

@@ -1,6 +1,7 @@
 package net.taskwolf.discord;
 
 import com.google.common.collect.Lists;
+import com.google.inject.Injector;
 import net.dv8tion.jda.api.JDA;
 import net.taskwolf.core.CoreModule;
 import net.taskwolf.core.account.AccountLink;
@@ -14,7 +15,7 @@ import net.taskwolf.core.module.ModuleLoadPriority;
 import net.taskwolf.core.trigger.TriggerFactory;
 import net.taskwolf.core.trigger.TriggerInformation;
 import net.taskwolf.core.workflow.component.input.InputComponentSelect;
-import net.taskwolf.discord.access.GuildDatabaseTable;
+import net.taskwolf.discord.guild.GuildDatabaseTable;
 import net.taskwolf.discord.action.ChannelMessageAction;
 import net.taskwolf.discord.action.DiscordActionFactory;
 import net.taskwolf.discord.trigger.ChannelMessageTrigger;
@@ -31,7 +32,6 @@ import java.util.stream.Collectors;
   priority = ModuleLoadPriority.NEUTRAL)
 public final class DiscordModule extends Module {
   private Log log;
-  private GuildDatabaseTable guildDatabaseTable;
   private TriggerFactory triggerFactory;
   private ActionFactory actionFactory;
   private AccountLink accountLink;
@@ -39,24 +39,24 @@ public final class DiscordModule extends Module {
   private InputComponentSelect channelComponentSelect;
   private DiscordBot discordBot;
 
-  public DiscordModule(CoreModule coreModule) {
-    super(coreModule);
+  public DiscordModule(Injector injector) {
+    super(injector.createChildInjector(DiscordInjectionModule.create()));
   }
 
   @Override
   public void enable() throws Exception {
-    log = coreModule().log().subLog("Discord");
-    guildDatabaseTable = GuildDatabaseTable.create(coreModule().databaseConnection(),
-      coreModule().databaseKeyspace());
+    log = injector().getInstance(Log.class).subLog("Discord");
     discordBot = DiscordBot.create(log, DiscordConfiguration.createAndLoad());
     discordBot.initialize();
     var jda = discordBot.jda();
     triggerFactory = DiscordTriggerFactory.create();
     actionFactory = DiscordActionFactory.create(jda);
+    var guildDatabaseTable = injector().getInstance(GuildDatabaseTable.class);
     accountLink = DiscordAccountLink.create(jda, guildDatabaseTable);
     guildComponentSelect = createGuildComponentSelect(jda, guildDatabaseTable);
     channelComponentSelect = createChannelComponentSelect(jda);
-    jda.addEventListener(MessageListener.create(coreModule(), triggerFactory, jda));
+    jda.addEventListener(MessageListener.create(
+      injector().getInstance(CoreModule.class), triggerFactory, jda));
   }
 
   private InputComponentSelect createGuildComponentSelect(
