@@ -17,6 +17,7 @@ public final class GuildInjectionModule extends AbstractModule {
     var guildDatabaseTable = GuildDatabaseTable.create(databaseConnection,
       databaseKeyspace);
     guildDatabaseTable.createIfNotExists();
+    guildDatabaseTable.createIndexIfNotExists("guilds");
     return guildDatabaseTable;
   }
 }
