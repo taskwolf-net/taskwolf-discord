@@ -22,6 +22,7 @@ import net.taskwolf.discord.trigger.ChannelMessageTrigger;
 import net.taskwolf.discord.trigger.DiscordTriggerFactory;
 import net.taskwolf.discord.trigger.MessageListener;
 import org.json.JSONObject;
+import org.springframework.boot.SpringApplication;
 
 import java.util.List;
 import java.util.Map;
@@ -46,6 +47,8 @@ public final class DiscordModule extends Module {
   @Override
   public void enable() throws Exception {
     log = injector().getInstance(Log.class).subLog("Discord");
+    injector().getInstance(SpringApplication.class).addInitializers(
+      injector().getInstance(DiscordContextInitializer.class));
     discordBot = DiscordBot.create(log, DiscordConfiguration.createAndLoad());
     discordBot.initialize();
     var jda = discordBot.jda();
