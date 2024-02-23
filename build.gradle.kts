@@ -20,8 +20,8 @@ repositories {
 }
 
 dependencies {
-  testCompileOnly(platform("org.junit:junit-bom:5.10.1"))
-  testCompileOnly("org.junit.jupiter:junit-jupiter:5.10.1")
+  testCompileOnly(platform("org.junit:junit-bom:5.10.2"))
+  testCompileOnly("org.junit.jupiter:junit-jupiter:5.10.2")
 
   compileOnly("net.taskwolf:core:1.0.0-SNAPSHOT")
 
@@ -36,14 +36,14 @@ dependencies {
 
   compileOnly("com.datastax.oss:java-driver-core:4.17.0")
 
-  compileOnly("org.json:json:20231013")
+  compileOnly("org.json:json:20240205")
   compileOnly("commons-io:commons-io:2.15.1")
 
-  compileOnly("org.springframework.boot:spring-boot-starter-web:3.2.1")
+  compileOnly("org.springframework.boot:spring-boot-starter-web:3.2.2")
 
-  compileOnly("io.jsonwebtoken:jjwt:0.12.3")
+  compileOnly("io.jsonwebtoken:jjwt:0.12.5")
 
-  implementation("net.dv8tion:JDA:5.0.0-beta.19")
+  implementation("net.dv8tion:JDA:5.0.0-beta.20")
 }
 
 tasks.test {
