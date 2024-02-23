@@ -15,6 +15,7 @@ import net.taskwolf.core.workflow.placeholder.PlaceholderDissolve;
 import org.json.JSONObject;
 
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 @AllArgsConstructor(staticName = "create")
 public final class ChannelMessageAction implements Action {
@@ -47,18 +48,18 @@ public final class ChannelMessageAction implements Action {
   private String message;
 
   @Override
-  public ActionResult execute(Map<String, Object> information) {
+  public CompletableFuture<ActionResult> execute(Map<String, Object> information) {
     if (jda.getGuildById(guildIdentifier) == null) {
-      return ActionResult.failure("discord.action.channel.message.failure.server.not.found");
+      return ActionResult.futureFailure("discord.action.channel.message.failure.server.not.found");
     }
     var placeholderDissolve = PlaceholderDissolve.create(information);
     message = placeholderDissolve.dissolve(message);
     var channel = jda.getTextChannelById(channelIdentifier);
     if (channel == null) {
-      return ActionResult.failure("discord.action.channel.message.failure.channel.not.found");
+      return ActionResult.futureFailure("discord.action.channel.message.failure.channel.not.found");
     }
     channel.sendMessage(message).queue();
-    return ActionResult.success(buildInformation(channel));
+    return ActionResult.futureSuccess(buildInformation(channel));
   }
 
   private Map<String, Object> buildInformation(TextChannel channel) {
