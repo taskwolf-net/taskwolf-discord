@@ -58,7 +58,9 @@ public final class ChannelMessageAction implements Action {
     if (channel == null) {
       return ActionResult.futureFailure("discord.action.channel.message.failure.channel.not.found");
     }
-    channel.sendMessage(message).queue();
+    if (!message.isEmpty()) {
+      channel.sendMessage(message).queue();
+    }
     return ActionResult.futureSuccess(buildInformation(channel));
   }
 
