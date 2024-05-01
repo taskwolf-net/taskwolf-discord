@@ -1,30 +1,26 @@
 package net.taskwolf.discord;
 
-import com.google.common.collect.Lists;
 import com.google.inject.Injector;
 import net.dv8tion.jda.api.JDA;
 import net.taskwolf.core.CoreModule;
 import net.taskwolf.core.account.AccountLink;
-import net.taskwolf.core.action.ActionFactory;
-import net.taskwolf.core.action.ActionInformation;
+import net.taskwolf.core.action.ActionRepository;
+import net.taskwolf.core.database.DatabaseConnection;
+import net.taskwolf.core.database.DatabaseKeyspace;
 import net.taskwolf.core.log.Log;
 import net.taskwolf.core.module.Module;
 import net.taskwolf.core.module.ModuleDescription;
 import net.taskwolf.core.module.ModuleInformation;
 import net.taskwolf.core.module.ModuleLoadPriority;
-import net.taskwolf.core.trigger.TriggerFactory;
-import net.taskwolf.core.trigger.TriggerInformation;
+import net.taskwolf.core.trigger.TriggerRepository;
 import net.taskwolf.core.workflow.component.input.InputComponentSelect;
+import net.taskwolf.discord.action.message.ChannelMessageAction;
 import net.taskwolf.discord.guild.GuildDatabaseTable;
-import net.taskwolf.discord.action.ChannelMessageAction;
-import net.taskwolf.discord.action.DiscordActionFactory;
-import net.taskwolf.discord.trigger.ChannelMessageTrigger;
-import net.taskwolf.discord.trigger.DiscordTriggerFactory;
-import net.taskwolf.discord.trigger.MessageListener;
+import net.taskwolf.discord.trigger.message.ChannelMessageTrigger;
+import net.taskwolf.discord.trigger.message.MessageListener;
 import org.json.JSONObject;
 import org.springframework.boot.SpringApplication;
 
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -33,8 +29,6 @@ import java.util.stream.Collectors;
   priority = ModuleLoadPriority.NEUTRAL)
 public final class DiscordModule extends Module {
   private Log log;
-  private TriggerFactory triggerFactory;
-  private ActionFactory actionFactory;
   private AccountLink accountLink;
   private InputComponentSelect guildComponentSelect;
   private InputComponentSelect channelComponentSelect;
@@ -52,14 +46,12 @@ public final class DiscordModule extends Module {
     discordBot = DiscordBot.create(log, DiscordConfiguration.createAndLoad());
     discordBot.initialize();
     var jda = discordBot.jda();
-    triggerFactory = DiscordTriggerFactory.create();
-    actionFactory = DiscordActionFactory.create(jda);
     var guildDatabaseTable = injector().getInstance(GuildDatabaseTable.class);
     accountLink = DiscordAccountLink.create(jda, guildDatabaseTable);
     guildComponentSelect = createGuildComponentSelect(jda, guildDatabaseTable);
     channelComponentSelect = createChannelComponentSelect(jda);
     jda.addEventListener(MessageListener.create(
-      injector().getInstance(CoreModule.class), triggerFactory, jda));
+      injector().getInstance(CoreModule.class), jda));
   }
 
   private InputComponentSelect createGuildComponentSelect(
@@ -84,16 +76,6 @@ public final class DiscordModule extends Module {
   }
 
   @Override
-  public TriggerFactory triggerFactory() {
-    return triggerFactory;
-  }
-
-  @Override
-  public ActionFactory actionFactory() {
-    return actionFactory;
-  }
-
-  @Override
   public AccountLink accountLink() {
     return accountLink;
   }
@@ -105,14 +87,23 @@ public final class DiscordModule extends Module {
   }
 
   @Override
-  public List<TriggerInformation> triggerInformation() {
-    return Lists.newArrayList(ChannelMessageTrigger.information(guildComponentSelect,
-      channelComponentSelect));
+  public TriggerRepository triggerRepository() {
+    var databaseConnection = injector().getInstance(DatabaseConnection.class);
+    var databaseKeyspace = injector().getInstance(DatabaseKeyspace.class);
+    var repository = TriggerRepository.create();
+    repository.registerTrigger(ChannelMessageTrigger.create(guildComponentSelect,
+      channelComponentSelect, databaseConnection, databaseKeyspace));
+    return repository;
   }
 
   @Override
-  public List<ActionInformation> actionInformation() {
-    return Lists.newArrayList(ChannelMessageAction.information(guildComponentSelect,
-      channelComponentSelect));
+  public ActionRepository actionRepository() {
+    var databaseConnection = injector().getInstance(DatabaseConnection.class);
+    var databaseKeyspace = injector().getInstance(DatabaseKeyspace.class);
+    var repository = ActionRepository.create();
+    repository.registerAction(ChannelMessageAction.create(discordBot.jda(),
+      guildComponentSelect, channelComponentSelect, databaseConnection,
+      databaseKeyspace));
+    return repository;
   }
 }
