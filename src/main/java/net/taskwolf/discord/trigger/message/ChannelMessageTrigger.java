@@ -2,9 +2,7 @@ package net.taskwolf.discord.trigger.message;
 
 import com.google.common.collect.Lists;
 import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.Accessors;
 import net.taskwolf.core.database.*;
 import net.taskwolf.core.trigger.Trigger;
 import net.taskwolf.core.trigger.TriggerContentDatabaseTable;
@@ -18,8 +16,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
-@Getter
-@Accessors(fluent = true)
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public final class ChannelMessageTrigger implements Trigger {
   public static ChannelMessageTrigger create(
