@@ -22,7 +22,8 @@ public final class MessageListener extends ListenerAdapter {
       return;
     }
     coreModule.triggerWorkflows("discord", "discord-channel-message-trigger",
-      "", channelMessageInformation(event));
+      "guild='" + event.getGuild().getId() + "' AND channel='" +
+        event.getChannel().getId() + "'", channelMessageInformation(event));
   }
 
   private Map<String, Object> channelMessageInformation(MessageReceivedEvent event) {
