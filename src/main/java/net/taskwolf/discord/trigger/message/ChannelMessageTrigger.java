@@ -68,6 +68,13 @@ public final class ChannelMessageTrigger implements Trigger {
   }
 
   @Override
+  public CompletableFuture<Map<String, Object>> findContent(UUID triggerId) {
+    return contentDatabaseTable.findContent(triggerId).thenApply(row ->
+      Map.of("guildIdentifier", row.findCell(1).stringValue(),
+        "channelIdentifier", row.findCell(2).stringValue()));
+  }
+
+  @Override
   public CompletableFuture<List<UUID>> findEntries(String condition) {
     return contentDatabaseTable.findContentByCondition(condition).thenApply(
       rows -> rows.stream().map(row -> row.findCell(0).uuidValue()).toList());

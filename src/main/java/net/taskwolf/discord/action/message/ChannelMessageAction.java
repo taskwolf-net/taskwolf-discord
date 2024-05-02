@@ -66,6 +66,14 @@ public final class ChannelMessageAction implements Action<ChannelMessageActionEx
   }
 
   @Override
+  public CompletableFuture<Map<String, Object>> findContent(UUID triggerId) {
+    return contentDatabaseTable.findContent(triggerId).thenApply(row ->
+      Map.of("guildIdentifier", row.findCell(1).stringValue(),
+        "channelIdentifier", row.findCell(2).stringValue(),
+        "message", row.findCell(3).stringValue()));
+  }
+
+  @Override
   public CompletableFuture<ChannelMessageActionExecutor> build(UUID actionId) {
     return contentDatabaseTable.findContent(actionId).thenApply(content ->
       ChannelMessageActionExecutor.create(jda, content.findCell(1).stringValue(),
