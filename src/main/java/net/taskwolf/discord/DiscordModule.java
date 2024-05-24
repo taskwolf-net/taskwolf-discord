@@ -57,14 +57,14 @@ public final class DiscordModule extends Module {
   private InputComponentSelect createGuildComponentSelect(
     JDA jda, GuildDatabaseTable guildDatabaseTable
   ) {
-    return (user, previousInputs) -> guildDatabaseTable.findGuilds(user)
+    return (user, target, previousInputs) -> guildDatabaseTable.findGuilds(target)
       .thenApply(guilds -> guilds.stream().map(guild ->
         new JSONObject(Map.of("identifier", guild, "name",
           jda.getGuildById(guild).getName())).toString()).collect(Collectors.toList()));
   }
 
   private InputComponentSelect createChannelComponentSelect(JDA jda) {
-    return (user, previousInputs) -> CompletableFuture.completedFuture(
+    return (user, target, previousInputs) -> CompletableFuture.completedFuture(
       jda.getGuildById(previousInputs.get("guildIdentifier")).getTextChannels()
         .stream().map(channel -> new JSONObject(Map.of("identifier", channel.getId(),
           "name", channel.getName())).toString()).collect(Collectors.toList()));
