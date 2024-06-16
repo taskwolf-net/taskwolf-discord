@@ -1,0 +1,26 @@
+{
+  "discord.account.link.description": "Would you like to add another Discord server to integrate it into your automation with the help of Taskwolf? Just click on the logo.",
+
+  "discord.trigger.channel.message.name": "Receive new channel message",
+  "discord.trigger.channel.message.description": "Receive new channel message",
+  "discord.trigger.channel.message.input.server.name": "Server",
+  "discord.trigger.channel.message.input.server.description": "The server on which the message is to be received",
+  "discord.trigger.channel.message.input.channel.name": "Channel",
+  "discord.trigger.channel.message.input.channel.description": "The channel on which the message is to be received",
+  "discord.trigger.channel.message.output.message": "Message",
+  "discord.trigger.channel.message.output.message.author.identifier": "Message Author Identifier",
+  "discord.trigger.channel.message.output.message.author.name": "Message Author Name",
+
+  "discord.action.channel.message.name": "Send channel message",
+  "discord.action.channel.message.description": "Send channel message",
+  "discord.action.channel.message.input.server.name": "Server",
+  "discord.action.channel.message.input.server.description": "The server on which the message is to be sent",
+  "discord.action.channel.message.input.channel.name": "Channel",
+  "discord.action.channel.message.input.channel.description": "The channel in which the message is to be sent",
+  "discord.action.channel.message.input.message.name": "Message",
+  "discord.action.channel.message.input.message.description": "The message to be sent",
+  "discord.action.channel.message.output.message": "Message",
+  "discord.action.channel.message.output.channel.name": "Channel Name",
+  "discord.action.channel.message.failure.server.not.found": "An error occurred while sending a discord channel message. The error occurred because the selected server could not be found.",
+  "discord.action.channel.message.failure.channel.not.found": "An error occurred while sending a discord channel message. The error occurred because the selected channel could not be found."
+}

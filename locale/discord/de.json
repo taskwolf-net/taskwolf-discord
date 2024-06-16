@@ -1,0 +1,26 @@
+{
+  "discord.account.link.description": "Möchten Sie einen weiteren Discord-Server hinzufügen, um ihn mit Hilfe von Taskwolf in Ihre Automatisierung zu integrieren? Klicken Sie einfach auf das Logo.",
+
+  "discord.trigger.channel.message.name": "Empfang einer neuen Kanalnachricht",
+  "discord.trigger.channel.message.description": "Empfang einer neuen Kanalnachricht",
+  "discord.trigger.channel.message.input.server.name": "Server",
+  "discord.trigger.channel.message.input.server.description": "Der Server, auf dem die Nachricht empfangen werden soll",
+  "discord.trigger.channel.message.input.channel.name": "Kanal",
+  "discord.trigger.channel.message.input.channel.description": "Der Kanal, auf dem die Nachricht empfangen werden soll",
+  "discord.trigger.channel.message.output.message": "Nachricht",
+  "discord.trigger.channel.message.output.message.author.identifier": "Kennung des Nachrichtenautors",
+  "discord.trigger.channel.message.output.message.author.name": "Name des Nachrichtenautors",
+
+  "discord.action.channel.message.name": "Kanalnachricht senden",
+  "discord.action.channel.message.description": "Kanalnachricht senden",
+  "discord.action.channel.message.input.server.name": "Server",
+  "discord.action.channel.message.input.server.description": "Der Server, an den die Nachricht gesendet werden soll",
+  "discord.action.channel.message.input.channel.name": "Kanal",
+  "discord.action.channel.message.input.channel.description": "Der Kanal, über den die Nachricht gesendet werden soll",
+  "discord.action.channel.message.input.message.name": "Nachricht",
+  "discord.action.channel.message.input.message.description": "Die Nachricht, die gesendet werden soll",
+  "discord.action.channel.message.output.message": "Nachricht",
+  "discord.action.channel.message.output.channel.name": "Kanalname",
+  "discord.action.channel.message.failure.server.not.found": "Beim Senden einer Discord-Kanal-Nachricht ist ein Fehler aufgetreten. Der Fehler trat auf, weil der ausgewählte Server nicht gefunden werden konnte.",
+  "discord.action.channel.message.failure.channel.not.found": "Beim Senden einer Discord-Kanal-Nachricht ist ein Fehler aufgetreten. Der Fehler ist aufgetreten, weil der ausgewählte Kanal nicht gefunden werden konnte.",
+}
