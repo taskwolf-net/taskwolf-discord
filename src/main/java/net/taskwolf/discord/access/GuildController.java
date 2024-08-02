@@ -3,6 +3,7 @@ package net.taskwolf.discord.access;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import net.taskwolf.core.access.TaskwolfRestController;
+import net.taskwolf.core.organization.team.TeamTargetDatabaseTable;
 import net.taskwolf.core.user.User;
 import net.taskwolf.core.user.UserDatabaseTable;
 import net.taskwolf.discord.guild.GuildDatabaseTable;
@@ -14,17 +15,21 @@ import org.springframework.web.bind.annotation.RestController;
 import java.security.Key;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 @RestController
 public class GuildController extends TaskwolfRestController {
   private final GuildDatabaseTable guildDatabaseTable;
+  private final TeamTargetDatabaseTable teamTargetDatabaseTable;
 
   private GuildController(
     Key secretKey, UserDatabaseTable userDatabaseTable,
-    GuildDatabaseTable guildDatabaseTable
+    GuildDatabaseTable guildDatabaseTable,
+    TeamTargetDatabaseTable teamTargetDatabaseTable
   ) {
     super(secretKey, userDatabaseTable);
     this.guildDatabaseTable = guildDatabaseTable;
+    this.teamTargetDatabaseTable = teamTargetDatabaseTable;
   }
 
   @RequestMapping(path = "/discord/guild/add/", method = RequestMethod.GET)
@@ -33,18 +38,22 @@ public class GuildController extends TaskwolfRestController {
     @RequestParam("state") String state, @RequestParam("guild_id") String guildId
   ) throws Exception {
     response.sendRedirect("https://taskwolf.net/close/");
-    var splitted = state.split("TASKWOLF-STATE-SPLIT");
-    var apiKey = splitted[0];
+    var split = state.split("TASKWOLF-STATE-SPLIT");
+    var apiKey = split[0];
     if (!isValidApiKey(apiKey)) {
       return;
     }
-    var id = UUID.fromString(splitted[1]);
-    userDatabaseTable().findUser(findUserId(apiKey)).thenAccept(user -> guildDatabaseTable.userGuildsExists(id)
-      .thenAccept(exists -> addGuild(user, id, guildId, exists)));
+    var id = UUID.fromString(split[1]);
+    userDatabaseTable().findUser(findUserId(apiKey))
+      .thenAccept(user -> checkUserAuthorization(user, id)
+        .thenAccept(isAuthorized -> guildDatabaseTable.userGuildsExists(id)
+          .thenAccept(exists -> addGuild(id, guildId, isAuthorized, exists))));
   }
 
-  private void addGuild(User user, UUID id, String guildId, boolean userGuildsExists) {
-    if (!user.id().equals(id) && !user.organizations().contains(id)) {
+  private void addGuild(
+    UUID id, String guildId, boolean isAuthorized, boolean userGuildsExists
+  ) {
+    if (!isAuthorized) {
       return;
     }
     if (!userGuildsExists) {
@@ -60,5 +69,13 @@ public class GuildController extends TaskwolfRestController {
       return;
     }
     guildDatabaseTable.addGuild(id, guildId);
+  }
+
+  private CompletableFuture<Boolean> checkUserAuthorization(User user, UUID id) {
+    if (id.equals(user.id()) || user.organizations().contains(id)) {
+      return CompletableFuture.completedFuture(true);
+    }
+    return teamTargetDatabaseTable.findTargetSecured(user.id()).thenApply(
+      teamTarget -> teamTarget.map(uuid -> uuid.equals(id)).orElse(false));
   }
 }
