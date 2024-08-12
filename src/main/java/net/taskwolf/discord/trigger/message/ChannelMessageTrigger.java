@@ -60,7 +60,6 @@ public final class ChannelMessageTrigger implements Trigger {
   @Override
   public void initialize() {
     contentDatabaseTable.createIfNotExists();
-    contentDatabaseTable.createIndexIfNotExists("guild");
     contentDatabaseTable.createIndexIfNotExists("channel");
   }
 
