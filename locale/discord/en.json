@@ -44,8 +44,8 @@
   "discord.action.channel.create.description": "Is used to create a channel",
   "discord.action.channel.create.input.server.name": "Server",
   "discord.action.channel.create.input.server.description": "The server on which the channel is to be create",
-  "discord.action.channel.create.input.channel.name": "Channel Name",
-  "discord.action.channel.create.input.channel.description": "The name of the channel to be create",
+  "discord.action.channel.create.input.name.name": "Channel Name",
+  "discord.action.channel.create.input.name.description": "The name of the channel to be create",
   "discord.action.channel.create.output.channel.identifier": "Channel Identifier",
   "discord.action.channel.create.output.channel.name": "Channel Name",
   "discord.action.channel.create.failure.server.not.found": "An error occurred while creating a discord channel. The error occurred because the selected server could not be found.",
@@ -73,4 +73,16 @@
   "discord.action.channel.message.output.channel.name": "Channel Name",
   "discord.action.channel.message.failure.server.not.found": "An error occurred while sending a discord channel message. The error occurred because the selected server could not be found.",
   "discord.action.channel.message.failure.channel.not.found": "An error occurred while sending a discord channel message. The error occurred because the selected channel could not be found.",
+
+  "discord.action.user.retrieve.name": "Retrieve user",
+  "discord.action.user.retrieve.description": "Used to obtain information about a user",
+  "discord.action.user.retrieve.input.server.name": "Server",
+  "discord.action.user.retrieve.input.server.description": "The server on which the user is located",
+  "discord.action.user.retrieve.input.user.name": "User ID",
+  "discord.action.user.retrieve.input.user.description": "The ID of the user whose information is being searched for",
+  "discord.action.user.retrieve.output.user.identifier": "User Identifier",
+  "discord.action.user.retrieve.output.user.name": "User Name",
+  "discord.action.user.retrieve.output.user.avatar": "User Avatar URL",
+  "discord.action.user.retrieve.failure.server.not.found": "An error occurred while retrieving discord user information. The error occurred because the selected server could not be found.",
+  "discord.action.user.retrieve.failure.user.not.found": "An error occurred while retrieving discord information message. The error occurred because the selected user could not be found."
 }

@@ -18,6 +18,7 @@ import net.taskwolf.discord.action.channel.create.ChannelCreateAction;
 import net.taskwolf.discord.action.channel.delete.ChannelDeleteAction;
 import net.taskwolf.discord.action.channel.delete.ChannelDeleteActionExecutor;
 import net.taskwolf.discord.action.channel.message.ChannelMessageAction;
+import net.taskwolf.discord.action.user.retrieve.UserRetrieveAction;
 import net.taskwolf.discord.guild.GuildDatabaseTable;
 import net.taskwolf.discord.trigger.user.join.JoinListener;
 import net.taskwolf.discord.trigger.user.join.UserJoinTrigger;
@@ -129,6 +130,8 @@ public final class DiscordModule extends Module {
     repository.registerAction(ChannelMessageAction.create(discordBot.jda(),
       guildComponentSelect, channelComponentSelect, databaseConnection,
       databaseKeyspace));
+    repository.registerAction(UserRetrieveAction.create(discordBot.jda(),
+      guildComponentSelect, databaseConnection, databaseKeyspace));
     return repository;
   }
 }
