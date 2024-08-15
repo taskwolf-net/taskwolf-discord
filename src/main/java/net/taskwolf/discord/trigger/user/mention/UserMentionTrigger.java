@@ -1,4 +1,4 @@
-package net.taskwolf.discord.trigger.join;
+package net.taskwolf.discord.trigger.user.mention;
 
 import com.google.common.collect.Lists;
 import lombok.AccessLevel;
@@ -17,16 +17,16 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-public final class UserJoinTrigger implements Trigger {
-  public static UserJoinTrigger create(
+public final class UserMentionTrigger implements Trigger {
+  public static UserMentionTrigger create(
     InputComponentSelect guildComponentSelect,
     DatabaseConnection databaseConnection, DatabaseKeyspace databaseKeyspace
   ) {
     var contentColumns = Lists.<DatabaseColumn>newArrayList();
     contentColumns.add(DatabaseColumn.create("guild", DatabaseDataType.TEXT));
-    return new UserJoinTrigger(guildComponentSelect,
+    return new UserMentionTrigger(guildComponentSelect,
       TriggerContentDatabaseTable.create(databaseConnection, databaseKeyspace,
-        "trigger_discord_user_join", contentColumns));
+        "trigger_discord_user_mention", contentColumns));
   }
 
   private final InputComponentSelect guildComponentSelect;
@@ -34,20 +34,30 @@ public final class UserJoinTrigger implements Trigger {
 
   @Override
   public String type() {
-    return "discord-user-join-trigger";
+    return "discord-user-mention-trigger";
   }
 
   @Override
   public TriggerInformation information() {
     return TriggerInformation.builder()
-      .withName("discord.trigger.user.join.name")
-      .withDescription("discord.trigger.user.join.description")
-      .withInputVariable(InputComponentVariable.createSelect("discord.trigger.user.join.input.server.name",
-        "guildIdentifier", "discord.trigger.user.join.input.server.description", guildComponentSelect))
-      .withOutputVariable(OutputComponentVariable.create("discord.trigger.user.join.output.user.identifier",
-        "userIdentifier"))
-      .withOutputVariable(OutputComponentVariable.create("discord.trigger.user.join.output.user.name",
-        "userName")).build();
+      .withName("discord.trigger.user.mention.name")
+      .withDescription("discord.trigger.user.mention.description")
+      .withInputVariable(InputComponentVariable.createSelect("discord.trigger.user.mention.input.server.name",
+        "guildIdentifier", "discord.trigger.user.mention.input.server.description", guildComponentSelect))
+      .withOutputVariable(OutputComponentVariable.create("discord.trigger.user.mention.output.channel.identifier",
+        "channelIdentifier"))
+      .withOutputVariable(OutputComponentVariable.create("discord.trigger.user.mention.output.channel.name",
+        "channelName"))
+      .withOutputVariable(OutputComponentVariable.create("discord.trigger.user.mention.output.target.identifier",
+        "targetIdentifier"))
+      .withOutputVariable(OutputComponentVariable.create("discord.trigger.user.mention.output.target.name",
+        "targetName"))
+      .withOutputVariable(OutputComponentVariable.create("discord.trigger.user.mention.output.message",
+        "message"))
+      .withOutputVariable(OutputComponentVariable.create("discord.trigger.user.mention.output.message.author.identifier",
+        "messageAuthorIdentifier"))
+      .withOutputVariable(OutputComponentVariable.create("discord.trigger.user.mention.output.message.author.name",
+        "messageAuthorName")).build();
   }
 
   @Override

@@ -1,4 +1,4 @@
-package net.taskwolf.discord.trigger.message;
+package net.taskwolf.discord.trigger.user.join;
 
 import com.google.common.collect.Lists;
 import lombok.AccessLevel;
@@ -17,63 +17,55 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-public final class ChannelMessageTrigger implements Trigger {
-  public static ChannelMessageTrigger create(
+public final class UserJoinTrigger implements Trigger {
+  public static UserJoinTrigger create(
     InputComponentSelect guildComponentSelect,
-    InputComponentSelect channelComponentSelect,
     DatabaseConnection databaseConnection, DatabaseKeyspace databaseKeyspace
   ) {
     var contentColumns = Lists.<DatabaseColumn>newArrayList();
     contentColumns.add(DatabaseColumn.create("guild", DatabaseDataType.TEXT));
-    contentColumns.add(DatabaseColumn.create("channel", DatabaseDataType.TEXT));
-    return new ChannelMessageTrigger(guildComponentSelect, channelComponentSelect,
+    return new UserJoinTrigger(guildComponentSelect,
       TriggerContentDatabaseTable.create(databaseConnection, databaseKeyspace,
-        "trigger_discord_channel_message", contentColumns));
+        "trigger_discord_user_join", contentColumns));
   }
 
   private final InputComponentSelect guildComponentSelect;
-  private final InputComponentSelect channelComponentSelect;
   private final TriggerContentDatabaseTable contentDatabaseTable;
 
   @Override
   public String type() {
-    return "discord-channel-message-trigger";
+    return "discord-user-join-trigger";
   }
 
   @Override
   public TriggerInformation information() {
     return TriggerInformation.builder()
-      .withName("discord.trigger.channel.message.name")
-      .withDescription("discord.trigger.channel.message.description")
-      .withInputVariable(InputComponentVariable.createSelect("discord.trigger.channel.message.input.server.name",
-        "guildIdentifier", "discord.trigger.channel.message.input.server.description", guildComponentSelect))
-      .withInputVariable(InputComponentVariable.createSelect("discord.trigger.channel.message.input.channel.name",
-        "channelIdentifier", "discord.trigger.channel.message.input.channel.description", channelComponentSelect))
-      .withOutputVariable(OutputComponentVariable.create("discord.trigger.channel.message.output.message",
-        "message"))
-      .withOutputVariable(OutputComponentVariable.create("discord.trigger.channel.message.output.message.author.identifier",
-        "messageAuthorIdentifier"))
-      .withOutputVariable(OutputComponentVariable.create("discord.trigger.channel.message.output.message.author.name",
-        "messageAuthorName")).build();
+      .withName("discord.trigger.user.join.name")
+      .withDescription("discord.trigger.user.join.description")
+      .withInputVariable(InputComponentVariable.createSelect("discord.trigger.user.join.input.server.name",
+        "guildIdentifier", "discord.trigger.user.join.input.server.description", guildComponentSelect))
+      .withOutputVariable(OutputComponentVariable.create("discord.trigger.user.join.output.user.identifier",
+        "userIdentifier"))
+      .withOutputVariable(OutputComponentVariable.create("discord.trigger.user.join.output.user.name",
+        "userName")).build();
   }
 
   @Override
   public void initialize() {
     contentDatabaseTable.createIfNotExists();
-    contentDatabaseTable.createIndexIfNotExists("channel");
+    contentDatabaseTable.createIndexIfNotExists("guild");
   }
 
   @Override
   public CompletableFuture<Void> insert(UUID triggerId, Map<String, Object> content) {
     return contentDatabaseTable.insertContent(triggerId, DatabaseRow.of(
-      content.get("guildIdentifier"), content.get("channelIdentifier")));
+      content.get("guildIdentifier")));
   }
 
   @Override
   public CompletableFuture<Map<String, Object>> findContent(UUID triggerId) {
     return contentDatabaseTable.findContent(triggerId).thenApply(row ->
-      Map.of("guildIdentifier", row.findCell(1).stringValue(),
-        "channelIdentifier", row.findCell(2).stringValue()));
+      Map.of("guildIdentifier", row.findCell(1).stringValue()));
   }
 
   @Override

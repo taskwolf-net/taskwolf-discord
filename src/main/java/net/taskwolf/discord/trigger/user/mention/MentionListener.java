@@ -1,4 +1,4 @@
-package net.taskwolf.discord.trigger.mention;
+package net.taskwolf.discord.trigger.user.mention;
 
 import com.google.common.collect.Maps;
 import lombok.RequiredArgsConstructor;

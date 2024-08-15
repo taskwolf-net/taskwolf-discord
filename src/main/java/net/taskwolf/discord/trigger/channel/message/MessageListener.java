@@ -1,4 +1,4 @@
-package net.taskwolf.discord.trigger.message;
+package net.taskwolf.discord.trigger.channel.message;
 
 import com.google.common.collect.Maps;
 import lombok.RequiredArgsConstructor;

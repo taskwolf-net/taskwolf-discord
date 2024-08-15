@@ -1,4 +1,4 @@
-package net.taskwolf.discord.trigger.join;
+package net.taskwolf.discord.trigger.user.join;
 
 import com.google.common.collect.Maps;
 import lombok.RequiredArgsConstructor;

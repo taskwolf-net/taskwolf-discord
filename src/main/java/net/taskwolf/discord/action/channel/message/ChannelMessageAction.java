@@ -1,4 +1,4 @@
-package net.taskwolf.discord.action.message;
+package net.taskwolf.discord.action.channel.message;
 
 import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;

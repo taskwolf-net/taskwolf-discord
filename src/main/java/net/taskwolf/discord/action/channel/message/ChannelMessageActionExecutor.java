@@ -1,4 +1,4 @@
-package net.taskwolf.discord.action.message;
+package net.taskwolf.discord.action.channel.message;
 
 import com.datastax.oss.driver.shaded.guava.common.collect.Maps;
 import lombok.AllArgsConstructor;

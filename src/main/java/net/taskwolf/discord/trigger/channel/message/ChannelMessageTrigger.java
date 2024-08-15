@@ -1,4 +1,4 @@
-package net.taskwolf.discord.trigger.mention;
+package net.taskwolf.discord.trigger.channel.message;
 
 import com.google.common.collect.Lists;
 import lombok.AccessLevel;
@@ -17,65 +17,63 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-public final class UserMentionTrigger implements Trigger {
-  public static UserMentionTrigger create(
+public final class ChannelMessageTrigger implements Trigger {
+  public static ChannelMessageTrigger create(
     InputComponentSelect guildComponentSelect,
+    InputComponentSelect channelComponentSelect,
     DatabaseConnection databaseConnection, DatabaseKeyspace databaseKeyspace
   ) {
     var contentColumns = Lists.<DatabaseColumn>newArrayList();
     contentColumns.add(DatabaseColumn.create("guild", DatabaseDataType.TEXT));
-    return new UserMentionTrigger(guildComponentSelect,
+    contentColumns.add(DatabaseColumn.create("channel", DatabaseDataType.TEXT));
+    return new ChannelMessageTrigger(guildComponentSelect, channelComponentSelect,
       TriggerContentDatabaseTable.create(databaseConnection, databaseKeyspace,
-        "trigger_discord_user_mention", contentColumns));
+        "trigger_discord_channel_message", contentColumns));
   }
 
   private final InputComponentSelect guildComponentSelect;
+  private final InputComponentSelect channelComponentSelect;
   private final TriggerContentDatabaseTable contentDatabaseTable;
 
   @Override
   public String type() {
-    return "discord-user-mention-trigger";
+    return "discord-channel-message-trigger";
   }
 
   @Override
   public TriggerInformation information() {
     return TriggerInformation.builder()
-      .withName("discord.trigger.user.mention.name")
-      .withDescription("discord.trigger.user.mention.description")
-      .withInputVariable(InputComponentVariable.createSelect("discord.trigger.user.mention.input.server.name",
-        "guildIdentifier", "discord.trigger.user.mention.input.server.description", guildComponentSelect))
-      .withOutputVariable(OutputComponentVariable.create("discord.trigger.user.mention.output.channel.identifier",
-        "channelIdentifier"))
-      .withOutputVariable(OutputComponentVariable.create("discord.trigger.user.mention.output.channel.name",
-        "channelName"))
-      .withOutputVariable(OutputComponentVariable.create("discord.trigger.user.mention.output.target.identifier",
-        "targetIdentifier"))
-      .withOutputVariable(OutputComponentVariable.create("discord.trigger.user.mention.output.target.name",
-        "targetName"))
-      .withOutputVariable(OutputComponentVariable.create("discord.trigger.user.mention.output.message",
+      .withName("discord.trigger.channel.message.name")
+      .withDescription("discord.trigger.channel.message.description")
+      .withInputVariable(InputComponentVariable.createSelect("discord.trigger.channel.message.input.server.name",
+        "guildIdentifier", "discord.trigger.channel.message.input.server.description", guildComponentSelect))
+      .withInputVariable(InputComponentVariable.createSelect("discord.trigger.channel.message.input.channel.name",
+        "channelIdentifier", "discord.trigger.channel.message.input.channel.description", channelComponentSelect))
+      .withOutputVariable(OutputComponentVariable.create("discord.trigger.channel.message.output.message",
         "message"))
-      .withOutputVariable(OutputComponentVariable.create("discord.trigger.user.mention.output.message.author.identifier",
+      .withOutputVariable(OutputComponentVariable.create("discord.trigger.channel.message.output.message.author.identifier",
         "messageAuthorIdentifier"))
-      .withOutputVariable(OutputComponentVariable.create("discord.trigger.user.mention.output.message.author.name",
+      .withOutputVariable(OutputComponentVariable.create("discord.trigger.channel.message.output.message.author.name",
         "messageAuthorName")).build();
   }
 
   @Override
   public void initialize() {
     contentDatabaseTable.createIfNotExists();
-    contentDatabaseTable.createIndexIfNotExists("guild");
+    contentDatabaseTable.createIndexIfNotExists("channel");
   }
 
   @Override
   public CompletableFuture<Void> insert(UUID triggerId, Map<String, Object> content) {
     return contentDatabaseTable.insertContent(triggerId, DatabaseRow.of(
-      content.get("guildIdentifier")));
+      content.get("guildIdentifier"), content.get("channelIdentifier")));
   }
 
   @Override
   public CompletableFuture<Map<String, Object>> findContent(UUID triggerId) {
     return contentDatabaseTable.findContent(triggerId).thenApply(row ->
-      Map.of("guildIdentifier", row.findCell(1).stringValue()));
+      Map.of("guildIdentifier", row.findCell(1).stringValue(),
+        "channelIdentifier", row.findCell(2).stringValue()));
   }
 
   @Override
