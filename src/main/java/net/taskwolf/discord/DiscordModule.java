@@ -14,6 +14,9 @@ import net.taskwolf.core.module.ModuleInformation;
 import net.taskwolf.core.module.ModuleLoadPriority;
 import net.taskwolf.core.trigger.TriggerRepository;
 import net.taskwolf.core.workflow.component.input.InputComponentSelect;
+import net.taskwolf.discord.action.channel.create.ChannelCreateAction;
+import net.taskwolf.discord.action.channel.delete.ChannelDeleteAction;
+import net.taskwolf.discord.action.channel.delete.ChannelDeleteActionExecutor;
 import net.taskwolf.discord.action.channel.message.ChannelMessageAction;
 import net.taskwolf.discord.guild.GuildDatabaseTable;
 import net.taskwolf.discord.trigger.user.join.JoinListener;
@@ -119,6 +122,10 @@ public final class DiscordModule extends Module {
     var databaseConnection = injector().getInstance(DatabaseConnection.class);
     var databaseKeyspace = injector().getInstance(DatabaseKeyspace.class);
     var repository = ActionRepository.create();
+    repository.registerAction(ChannelCreateAction.create(discordBot.jda(),
+      guildComponentSelect, databaseConnection, databaseKeyspace));
+    repository.registerAction(ChannelDeleteAction.create(discordBot.jda(),
+      guildComponentSelect, databaseConnection, databaseKeyspace));
     repository.registerAction(ChannelMessageAction.create(discordBot.jda(),
       guildComponentSelect, channelComponentSelect, databaseConnection,
       databaseKeyspace));

@@ -40,8 +40,29 @@
   "discord.trigger.message.reaction.output.user.name": "User Name",
   "discord.trigger.message.reaction.output.reaction.emoji": "Reaction Emoji",
 
+  "discord.action.channel.create.name": "Create channel",
+  "discord.action.channel.create.description": "Is used to create a channel",
+  "discord.action.channel.create.input.server.name": "Server",
+  "discord.action.channel.create.input.server.description": "The server on which the channel is to be create",
+  "discord.action.channel.create.input.channel.name": "Channel Name",
+  "discord.action.channel.create.input.channel.description": "The name of the channel to be create",
+  "discord.action.channel.create.output.channel.identifier": "Channel Identifier",
+  "discord.action.channel.create.output.channel.name": "Channel Name",
+  "discord.action.channel.create.failure.server.not.found": "An error occurred while creating a discord channel. The error occurred because the selected server could not be found.",
+  "discord.action.channel.create.failure.name.empty": "An error occurred while creating a discord channel. The error occurred because the channel name is empty.",
+
+  "discord.action.channel.delete.name": "Delete channel",
+  "discord.action.channel.delete.description": "Is used to delete a channel",
+  "discord.action.channel.delete.input.server.name": "Server",
+  "discord.action.channel.delete.input.server.description": "The server on which the channel is to be deleted",
+  "discord.action.channel.delete.input.channel.name": "Channel ID",
+  "discord.action.channel.delete.input.channel.description": "The identifier of the channel to be deleted",
+  "discord.action.channel.delete.output.channel.identifier": "Channel Identifier",
+  "discord.action.channel.delete.failure.server.not.found": "An error occurred while deleting a discord channel. The error occurred because the selected server could not be found.",
+  "discord.action.channel.delete.failure.channel.not.found": "An error occurred while deleting a discord channel. The error occurred because the selected channel could not be found.",
+
   "discord.action.channel.message.name": "Send channel message",
-  "discord.action.channel.message.description": "Send channel message",
+  "discord.action.channel.message.description": "Is used to send a channel message",
   "discord.action.channel.message.input.server.name": "Server",
   "discord.action.channel.message.input.server.description": "The server on which the message is to be sent",
   "discord.action.channel.message.input.channel.name": "Channel",
@@ -51,5 +72,5 @@
   "discord.action.channel.message.output.message": "Message",
   "discord.action.channel.message.output.channel.name": "Channel Name",
   "discord.action.channel.message.failure.server.not.found": "An error occurred while sending a discord channel message. The error occurred because the selected server could not be found.",
-  "discord.action.channel.message.failure.channel.not.found": "An error occurred while sending a discord channel message. The error occurred because the selected channel could not be found."
+  "discord.action.channel.message.failure.channel.not.found": "An error occurred while sending a discord channel message. The error occurred because the selected channel could not be found.",
 }
