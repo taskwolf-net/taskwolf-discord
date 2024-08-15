@@ -69,8 +69,7 @@ public final class ChannelCreateAction implements Action<ChannelCreateActionExec
   public CompletableFuture<Map<String, Object>> findContent(UUID triggerId) {
     return contentDatabaseTable.findContent(triggerId).thenApply(row ->
       Map.of("guildIdentifier", row.findCell(1).stringValue(),
-        "channelIdentifier", row.findCell(2).stringValue(),
-        "channelName", row.findCell(3).stringValue()));
+        "name", row.findCell(2).stringValue()));
   }
 
   @Override
