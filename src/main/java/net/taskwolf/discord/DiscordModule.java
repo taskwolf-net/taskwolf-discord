@@ -19,7 +19,11 @@ import net.taskwolf.discord.action.channel.delete.ChannelDeleteAction;
 import net.taskwolf.discord.action.channel.delete.ChannelDeleteActionExecutor;
 import net.taskwolf.discord.action.channel.message.ChannelMessageAction;
 import net.taskwolf.discord.action.user.retrieve.UserRetrieveAction;
+import net.taskwolf.discord.action.user.role.add.UserRoleAddAction;
 import net.taskwolf.discord.guild.GuildDatabaseTable;
+import net.taskwolf.discord.select.ChannelSelect;
+import net.taskwolf.discord.select.GuildSelect;
+import net.taskwolf.discord.select.RoleSelect;
 import net.taskwolf.discord.trigger.user.join.JoinListener;
 import net.taskwolf.discord.trigger.user.join.UserJoinTrigger;
 import net.taskwolf.discord.trigger.user.mention.MentionListener;
@@ -40,8 +44,9 @@ import java.util.stream.Collectors;
 public final class DiscordModule extends Module {
   private Log log;
   private AccountLink accountLink;
-  private InputComponentSelect guildComponentSelect;
-  private InputComponentSelect channelComponentSelect;
+  private InputComponentSelect guildSelect;
+  private InputComponentSelect channelSelect;
+  private InputComponentSelect roleSelect;
   private DiscordBot discordBot;
 
   public DiscordModule(Injector injector) {
@@ -58,8 +63,9 @@ public final class DiscordModule extends Module {
     var jda = discordBot.jda();
     var guildDatabaseTable = injector().getInstance(GuildDatabaseTable.class);
     accountLink = DiscordAccountLink.create(jda, guildDatabaseTable);
-    guildComponentSelect = createGuildComponentSelect(jda, guildDatabaseTable);
-    channelComponentSelect = createChannelComponentSelect(jda);
+    guildSelect = GuildSelect.create(guildDatabaseTable, jda);
+    channelSelect = ChannelSelect.create(jda);
+    roleSelect = RoleSelect.create(jda);
     jda.addEventListener(JoinListener.create(
       injector().getInstance(CoreModule.class), jda));
     jda.addEventListener(MessageListener.create(
@@ -68,22 +74,6 @@ public final class DiscordModule extends Module {
       injector().getInstance(CoreModule.class), jda));
     jda.addEventListener(ReactionListener.create(
       injector().getInstance(CoreModule.class), jda));
-  }
-
-  private InputComponentSelect createGuildComponentSelect(
-    JDA jda, GuildDatabaseTable guildDatabaseTable
-  ) {
-    return (user, target, previousInputs) -> guildDatabaseTable.findGuilds(target)
-      .thenApply(guilds -> guilds.stream().map(guild ->
-        new JSONObject(Map.of("identifier", guild, "name",
-          jda.getGuildById(guild).getName())).toString()).collect(Collectors.toList()));
-  }
-
-  private InputComponentSelect createChannelComponentSelect(JDA jda) {
-    return (user, target, previousInputs) -> CompletableFuture.completedFuture(
-      jda.getGuildById(previousInputs.get("guildIdentifier")).getTextChannels()
-        .stream().map(channel -> new JSONObject(Map.of("identifier", channel.getId(),
-          "name", channel.getName())).toString()).collect(Collectors.toList()));
   }
 
   @Override
@@ -107,13 +97,13 @@ public final class DiscordModule extends Module {
     var databaseConnection = injector().getInstance(DatabaseConnection.class);
     var databaseKeyspace = injector().getInstance(DatabaseKeyspace.class);
     var repository = TriggerRepository.create();
-    repository.registerTrigger(UserJoinTrigger.create(guildComponentSelect,
+    repository.registerTrigger(UserJoinTrigger.create(guildSelect,
       databaseConnection, databaseKeyspace));
-    repository.registerTrigger(ChannelMessageTrigger.create(guildComponentSelect,
-      channelComponentSelect, databaseConnection, databaseKeyspace));
-    repository.registerTrigger(UserMentionTrigger.create(guildComponentSelect,
+    repository.registerTrigger(ChannelMessageTrigger.create(guildSelect,
+      channelSelect, databaseConnection, databaseKeyspace));
+    repository.registerTrigger(UserMentionTrigger.create(guildSelect,
       databaseConnection, databaseKeyspace));
-    repository.registerTrigger(MessageReactionTrigger.create(guildComponentSelect,
+    repository.registerTrigger(MessageReactionTrigger.create(guildSelect,
       databaseConnection, databaseKeyspace));
     return repository;
   }
@@ -124,14 +114,16 @@ public final class DiscordModule extends Module {
     var databaseKeyspace = injector().getInstance(DatabaseKeyspace.class);
     var repository = ActionRepository.create();
     repository.registerAction(ChannelCreateAction.create(discordBot.jda(),
-      guildComponentSelect, databaseConnection, databaseKeyspace));
+      guildSelect, databaseConnection, databaseKeyspace));
     repository.registerAction(ChannelDeleteAction.create(discordBot.jda(),
-      guildComponentSelect, databaseConnection, databaseKeyspace));
+      guildSelect, databaseConnection, databaseKeyspace));
     repository.registerAction(ChannelMessageAction.create(discordBot.jda(),
-      guildComponentSelect, channelComponentSelect, databaseConnection,
+      guildSelect, channelSelect, databaseConnection,
       databaseKeyspace));
     repository.registerAction(UserRetrieveAction.create(discordBot.jda(),
-      guildComponentSelect, databaseConnection, databaseKeyspace));
+      guildSelect, databaseConnection, databaseKeyspace));
+    repository.registerAction(UserRoleAddAction.create(discordBot.jda(),
+      guildSelect, roleSelect, databaseConnection, databaseKeyspace));
     return repository;
   }
 }

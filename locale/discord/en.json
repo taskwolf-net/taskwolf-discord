@@ -84,5 +84,18 @@
   "discord.action.user.retrieve.output.user.name": "User Name",
   "discord.action.user.retrieve.output.user.avatar": "User Avatar URL",
   "discord.action.user.retrieve.failure.server.not.found": "An error occurred while retrieving discord user information. The error occurred because the selected server could not be found.",
-  "discord.action.user.retrieve.failure.user.not.found": "An error occurred while retrieving discord information message. The error occurred because the selected user could not be found."
+  "discord.action.user.retrieve.failure.user.not.found": "An error occurred while retrieving discord information message. The error occurred because the selected user could not be found.",
+
+  "discord.action.user.role.add.name": "Assign role to user",
+  "discord.action.user.role.add.description": "Is used to assign a new role to a user",
+  "discord.action.user.role.add.input.server.name": "Server",
+  "discord.action.user.role.add.input.server.description": "The server on which the user is located",
+  "discord.action.user.role.add.input.user.name": "User ID",
+  "discord.action.user.role.add.input.user.description": "The identification of the user to whom a new role is to be assigned",
+  "discord.action.user.role.add.input.role.name": "Role",
+  "discord.action.user.role.add.input.role.description": "The role to be assigned to the user",
+  "discord.action.user.role.add.output.user.identifier": "User Identifier",
+  "discord.action.user.role.add.failure.server.not.found": "An error occurred while adding role to discord user. The error occurred because the selected server could not be found.",
+  "discord.action.user.role.add.failure.user.not.found": "An error occurred while adding role to discord user. The error occurred because the selected user could not be found.",
+  "discord.action.user.role.add.failure.role.not.found": "An error occurred while adding role to discord user. The error occurred because the selected role could not be found."
 }

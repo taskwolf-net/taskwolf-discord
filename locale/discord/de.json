@@ -74,7 +74,7 @@
   "discord.action.channel.message.failure.server.not.found": "Beim Senden einer Discord-Kanal-Nachricht ist ein Fehler aufgetreten. Der Fehler trat auf, weil der ausgewählte Server nicht gefunden werden konnte.",
   "discord.action.channel.message.failure.channel.not.found": "Beim Senden einer Discord-Kanal-Nachricht ist ein Fehler aufgetreten. Der Fehler ist aufgetreten, weil der ausgewählte Kanal nicht gefunden werden konnte.",
 
-  "discord.action.user.retrieve.name": "Benutzer abrufen",
+  "discord.action.user.retrieve.name": "Nutzer abrufen",
   "discord.action.user.retrieve.description": "Wird verwendet, um Informationen über einen Benutzer zu erhalten",
   "discord.action.user.retrieve.input.server.name": "Server",
   "discord.action.user.retrieve.input.server.description": "Der Server, auf dem sich der Benutzer befindet",
@@ -84,5 +84,18 @@
   "discord.action.user.retrieve.output.user.name": "Name des Nutzers",
   "discord.action.user.retrieve.output.user.avatar": "Avatar URL des Nutzers",
   "discord.action.user.retrieve.failure.server.not.found": "Beim Abrufen von Discord-Benutzerinformationen ist ein Fehler aufgetreten. Der Fehler trat auf, weil der ausgewählte Server nicht gefunden werden konnte.",
-  "discord.action.user.retrieve.failure.user.not.found": "Beim Abrufen der Discord-Informationsnachricht ist ein Fehler aufgetreten. Der Fehler trat auf, weil der ausgewählte Benutzer nicht gefunden werden konnte."
+  "discord.action.user.retrieve.failure.user.not.found": "Beim Abrufen der Discord-Informationsnachricht ist ein Fehler aufgetreten. Der Fehler trat auf, weil der ausgewählte Benutzer nicht gefunden werden konnte.",
+
+  "discord.action.user.role.add.name": "Nutzer Rolle zuweisen",
+  "discord.action.user.role.add.description": "Wird verwendet, um einem Benutzer eine neue Rolle zuzuweisen",
+  "discord.action.user.role.add.input.server.name": "Server",
+  "discord.action.user.role.add.input.server.description": "Der Server, auf dem sich der Benutzer befindet",
+  "discord.action.user.role.add.input.user.name": "Nutzer-ID",
+  "discord.action.user.role.add.input.user.description": "Die Kennung des Benutzers, dem eine neue Rolle zugewiesen werden soll",
+  "discord.action.user.role.add.input.role.name": "Rolle",
+  "discord.action.user.role.add.input.role.description": "Die Rolle, die dem Benutzer zugewiesen werden soll",
+  "discord.action.user.role.add.output.user.identifier": "Kennung des Nutzers",
+  "discord.action.user.role.add.failure.server.not.found": "Beim Hinzufügen einer Rolle zu einem Discord-Benutzer ist ein Fehler aufgetreten. Der Fehler trat auf, weil der ausgewählte Server nicht gefunden werden konnte.",
+  "discord.action.user.role.add.failure.user.not.found": "Beim Hinzufügen einer Rolle zu einem Discord-Benutzer ist ein Fehler aufgetreten. Der Fehler trat auf, weil der ausgewählte Benutzer nicht gefunden werden konnte.",
+  "discord.action.user.role.add.failure.role.not.found": "Beim Hinzufügen einer Rolle zu einem Discord-Benutzer ist ein Fehler aufgetreten. Der Fehler ist aufgetreten, weil die gewählte Rolle nicht gefunden werden konnte."
 }
