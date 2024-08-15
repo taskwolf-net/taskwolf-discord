@@ -16,8 +16,14 @@ import net.taskwolf.core.trigger.TriggerRepository;
 import net.taskwolf.core.workflow.component.input.InputComponentSelect;
 import net.taskwolf.discord.action.message.ChannelMessageAction;
 import net.taskwolf.discord.guild.GuildDatabaseTable;
+import net.taskwolf.discord.trigger.join.JoinListener;
+import net.taskwolf.discord.trigger.join.UserJoinTrigger;
+import net.taskwolf.discord.trigger.mention.MentionListener;
+import net.taskwolf.discord.trigger.mention.UserMentionTrigger;
 import net.taskwolf.discord.trigger.message.ChannelMessageTrigger;
 import net.taskwolf.discord.trigger.message.MessageListener;
+import net.taskwolf.discord.trigger.reaction.MessageReactionTrigger;
+import net.taskwolf.discord.trigger.reaction.ReactionListener;
 import org.json.JSONObject;
 import org.springframework.boot.SpringApplication;
 
@@ -50,7 +56,13 @@ public final class DiscordModule extends Module {
     accountLink = DiscordAccountLink.create(jda, guildDatabaseTable);
     guildComponentSelect = createGuildComponentSelect(jda, guildDatabaseTable);
     channelComponentSelect = createChannelComponentSelect(jda);
+    jda.addEventListener(JoinListener.create(
+      injector().getInstance(CoreModule.class), jda));
     jda.addEventListener(MessageListener.create(
+      injector().getInstance(CoreModule.class), jda));
+    jda.addEventListener(MentionListener.create(
+      injector().getInstance(CoreModule.class), jda));
+    jda.addEventListener(ReactionListener.create(
       injector().getInstance(CoreModule.class), jda));
   }
 
@@ -91,8 +103,14 @@ public final class DiscordModule extends Module {
     var databaseConnection = injector().getInstance(DatabaseConnection.class);
     var databaseKeyspace = injector().getInstance(DatabaseKeyspace.class);
     var repository = TriggerRepository.create();
+    repository.registerTrigger(UserJoinTrigger.create(guildComponentSelect,
+      databaseConnection, databaseKeyspace));
     repository.registerTrigger(ChannelMessageTrigger.create(guildComponentSelect,
       channelComponentSelect, databaseConnection, databaseKeyspace));
+    repository.registerTrigger(UserMentionTrigger.create(guildComponentSelect,
+      databaseConnection, databaseKeyspace));
+    repository.registerTrigger(MessageReactionTrigger.create(guildComponentSelect,
+      databaseConnection, databaseKeyspace));
     return repository;
   }
 
