@@ -53,7 +53,7 @@ public final class UserRoleAddAction implements Action<UserRoleAddActionExecutor
         "userIdentifier", "discord.action.user.role.add.input.user.description", InputComponentDataType.TEXT))
       .withInputVariable(InputComponentVariable.createSelect("discord.action.user.role.add.input.role.name",
         "roleIdentifier", "discord.action.user.role.add.input.role.description", roleComponentSelect))
-      .withOutputVariable(OutputComponentVariable.create("discord.action.user.retrieve.output.user.identifier",
+      .withOutputVariable(OutputComponentVariable.create("discord.action.user.role.add.output.user.identifier",
         "userIdentifier")).build();
   }
 
