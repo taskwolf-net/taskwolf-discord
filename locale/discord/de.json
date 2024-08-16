@@ -97,5 +97,6 @@
   "discord.action.user.role.add.output.user.identifier": "Kennung des Nutzers",
   "discord.action.user.role.add.failure.server.not.found": "Beim Hinzufügen einer Rolle zu einem Discord-Benutzer ist ein Fehler aufgetreten. Der Fehler trat auf, weil der ausgewählte Server nicht gefunden werden konnte.",
   "discord.action.user.role.add.failure.user.not.found": "Beim Hinzufügen einer Rolle zu einem Discord-Benutzer ist ein Fehler aufgetreten. Der Fehler trat auf, weil der ausgewählte Benutzer nicht gefunden werden konnte.",
-  "discord.action.user.role.add.failure.role.not.found": "Beim Hinzufügen einer Rolle zu einem Discord-Benutzer ist ein Fehler aufgetreten. Der Fehler ist aufgetreten, weil die gewählte Rolle nicht gefunden werden konnte."
+  "discord.action.user.role.add.failure.role.not.found": "Beim Hinzufügen einer Rolle zu einem Discord-Benutzer ist ein Fehler aufgetreten. Der Fehler ist aufgetreten, weil die gewählte Rolle nicht gefunden werden konnte.",
+  "discord.action.user.role.add.failure.hierarchy": "Beim Hinzufügen einer Rolle zu einem Discord-Benutzer ist ein Fehler aufgetreten. Der Fehler ist aufgetreten, weil der Bot nicht über die notwendigen Rechte verfügt, um die Rolle zuzuweisen."
 }

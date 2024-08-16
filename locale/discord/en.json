@@ -97,5 +97,6 @@
   "discord.action.user.role.add.output.user.identifier": "User Identifier",
   "discord.action.user.role.add.failure.server.not.found": "An error occurred while adding role to discord user. The error occurred because the selected server could not be found.",
   "discord.action.user.role.add.failure.user.not.found": "An error occurred while adding role to discord user. The error occurred because the selected user could not be found.",
-  "discord.action.user.role.add.failure.role.not.found": "An error occurred while adding role to discord user. The error occurred because the selected role could not be found."
+  "discord.action.user.role.add.failure.role.not.found": "An error occurred while adding role to discord user. The error occurred because the selected role could not be found.",
+  "discord.action.user.role.add.failure.hierarchy": "An error occurred while adding role to discord user. The error has occurred because the bot does not have the necessary rights to assign the role."
 }

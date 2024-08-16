@@ -18,8 +18,8 @@ import java.util.concurrent.CompletableFuture;
 public final class UserRoleAddActionExecutor implements ActionExecutor {
   private final JDA jda;
   private final String guildIdentifier;
-  private final String roleIdentifier;
   private String userIdentifier;
+  private final String roleIdentifier;
 
   @Override
   public CompletableFuture<ActionResult> execute(Map<String, Object> information) {
@@ -43,7 +43,11 @@ public final class UserRoleAddActionExecutor implements ActionExecutor {
     if (role == null) {
       return ActionResult.failure("discord.action.user.role.add.failure.role.not.found");
     }
-    guild.addRoleToMember(member, role);
+    try {
+      guild.addRoleToMember(member, role).queue();
+    } catch (Exception exception) {
+      return ActionResult.failure("discord.action.user.role.add.failure.hierarchy");
+    }
     return ActionResult.success(buildInformation(member.getUser()));
   }
 
