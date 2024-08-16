@@ -95,8 +95,22 @@
   "discord.action.user.role.add.input.role.name": "Role",
   "discord.action.user.role.add.input.role.description": "The role to be assigned to the user",
   "discord.action.user.role.add.output.user.identifier": "User Identifier",
-  "discord.action.user.role.add.failure.server.not.found": "An error occurred while adding role to discord user. The error occurred because the selected server could not be found.",
-  "discord.action.user.role.add.failure.user.not.found": "An error occurred while adding role to discord user. The error occurred because the selected user could not be found.",
-  "discord.action.user.role.add.failure.role.not.found": "An error occurred while adding role to discord user. The error occurred because the selected role could not be found.",
-  "discord.action.user.role.add.failure.hierarchy": "An error occurred while adding role to discord user. The error has occurred because the bot does not have the necessary rights to assign the role."
+  "discord.action.user.role.add.failure.server.not.found": "An error occurred while adding a role to a discord user. The error occurred because the selected server could not be found.",
+  "discord.action.user.role.add.failure.user.not.found": "An error occurred while adding a role to a discord user. The error occurred because the selected user could not be found.",
+  "discord.action.user.role.add.failure.role.not.found": "An error occurred while adding a role to a discord user. The error occurred because the selected role could not be found.",
+  "discord.action.user.role.add.failure.hierarchy": "An error occurred while adding a role to a discord user. The error has occurred because the bot does not have the necessary rights to assign the role.",
+
+  "discord.action.user.role.remove.name": "Remove role from user",
+  "discord.action.user.role.remove.description": "Is used to remove a role from a user",
+  "discord.action.user.role.remove.input.server.name": "Server",
+  "discord.action.user.role.remove.input.server.description": "The server on which the user is located",
+  "discord.action.user.role.remove.input.user.name": "User ID",
+  "discord.action.user.role.remove.input.user.description": "The identification of the user to whom the role is to be removed",
+  "discord.action.user.role.remove.input.role.name": "Role",
+  "discord.action.user.role.remove.input.role.description": "The role to be removed from the user",
+  "discord.action.user.role.remove.output.user.identifier": "User Identifier",
+  "discord.action.user.role.remove.failure.server.not.found": "An error occurred while removing a role from a discord user. The error occurred because the selected server could not be found.",
+  "discord.action.user.role.remove.failure.user.not.found": "An error occurred while removing a role from a discord user. The error occurred because the selected user could not be found.",
+  "discord.action.user.role.remove.failure.role.not.found": "An error occurred while removing a role from a discord user. The error occurred because the selected role could not be found.",
+  "discord.action.user.role.remove.failure.hierarchy": "An error occurred while removing a role from a discord user. The error has occurred because the bot does not have the necessary rights to access the role."
 }

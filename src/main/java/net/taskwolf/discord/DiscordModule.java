@@ -1,7 +1,6 @@
 package net.taskwolf.discord;
 
 import com.google.inject.Injector;
-import net.dv8tion.jda.api.JDA;
 import net.taskwolf.core.CoreModule;
 import net.taskwolf.core.account.AccountLink;
 import net.taskwolf.core.action.ActionRepository;
@@ -16,10 +15,10 @@ import net.taskwolf.core.trigger.TriggerRepository;
 import net.taskwolf.core.workflow.component.input.InputComponentSelect;
 import net.taskwolf.discord.action.channel.create.ChannelCreateAction;
 import net.taskwolf.discord.action.channel.delete.ChannelDeleteAction;
-import net.taskwolf.discord.action.channel.delete.ChannelDeleteActionExecutor;
 import net.taskwolf.discord.action.channel.message.ChannelMessageAction;
 import net.taskwolf.discord.action.user.retrieve.UserRetrieveAction;
 import net.taskwolf.discord.action.user.role.add.UserRoleAddAction;
+import net.taskwolf.discord.action.user.role.remove.UserRoleRemoveAction;
 import net.taskwolf.discord.guild.GuildDatabaseTable;
 import net.taskwolf.discord.select.ChannelSelect;
 import net.taskwolf.discord.select.GuildSelect;
@@ -32,12 +31,7 @@ import net.taskwolf.discord.trigger.channel.message.ChannelMessageTrigger;
 import net.taskwolf.discord.trigger.channel.message.MessageListener;
 import net.taskwolf.discord.trigger.message.reaction.MessageReactionTrigger;
 import net.taskwolf.discord.trigger.message.reaction.ReactionListener;
-import org.json.JSONObject;
 import org.springframework.boot.SpringApplication;
-
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
 @ModuleDescription(name = "discord", version = "1.0.0-SNAPSHOT",
   priority = ModuleLoadPriority.NEUTRAL)
@@ -123,6 +117,8 @@ public final class DiscordModule extends Module {
     repository.registerAction(UserRetrieveAction.create(discordBot.jda(),
       guildSelect, databaseConnection, databaseKeyspace));
     repository.registerAction(UserRoleAddAction.create(discordBot.jda(),
+      guildSelect, roleSelect, databaseConnection, databaseKeyspace));
+    repository.registerAction(UserRoleRemoveAction.create(discordBot.jda(),
       guildSelect, roleSelect, databaseConnection, databaseKeyspace));
     return repository;
   }

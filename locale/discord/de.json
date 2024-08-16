@@ -98,5 +98,19 @@
   "discord.action.user.role.add.failure.server.not.found": "Beim Hinzufügen einer Rolle zu einem Discord-Benutzer ist ein Fehler aufgetreten. Der Fehler trat auf, weil der ausgewählte Server nicht gefunden werden konnte.",
   "discord.action.user.role.add.failure.user.not.found": "Beim Hinzufügen einer Rolle zu einem Discord-Benutzer ist ein Fehler aufgetreten. Der Fehler trat auf, weil der ausgewählte Benutzer nicht gefunden werden konnte.",
   "discord.action.user.role.add.failure.role.not.found": "Beim Hinzufügen einer Rolle zu einem Discord-Benutzer ist ein Fehler aufgetreten. Der Fehler ist aufgetreten, weil die gewählte Rolle nicht gefunden werden konnte.",
-  "discord.action.user.role.add.failure.hierarchy": "Beim Hinzufügen einer Rolle zu einem Discord-Benutzer ist ein Fehler aufgetreten. Der Fehler ist aufgetreten, weil der Bot nicht über die notwendigen Rechte verfügt, um die Rolle zuzuweisen."
+  "discord.action.user.role.add.failure.hierarchy": "Beim Hinzufügen einer Rolle zu einem Discord-Benutzer ist ein Fehler aufgetreten. Der Fehler ist aufgetreten, weil der Bot nicht über die notwendigen Rechte verfügt, um die Rolle zuzuweisen.",
+
+  "discord.action.user.role.remove.name": "Rolle vom Nutzer entfernen",
+  "discord.action.user.role.remove.description": "Wird verwendet, um eine Rolle von einem Benutzer zu entfernen",
+  "discord.action.user.role.remove.input.server.name": "Server",
+  "discord.action.user.role.remove.input.server.description": "Der Server, auf dem sich der Benutzer befindet",
+  "discord.action.user.role.remove.input.user.name": "User ID",
+  "discord.action.user.role.remove.input.user.description": "Die Identifikation des Benutzers, dem die Rolle entzogen werden soll",
+  "discord.action.user.role.remove.input.role.name": "Rolle",
+  "discord.action.user.role.remove.input.role.description": "Die Rolle, die dem Benutzer entzogen werden soll",
+  "discord.action.user.role.remove.output.user.identifier": "Kennung des Nutzers",
+  "discord.action.user.role.remove.failure.server.not.found": "Beim Entfernen einer Rolle von einem Discord-Benutzer ist ein Fehler aufgetreten. Der Fehler trat auf, weil der ausgewählte Server nicht gefunden werden konnte.",
+  "discord.action.user.role.remove.failure.user.not.found": "Beim Entfernen einer Rolle von einem Discord-Benutzer ist ein Fehler aufgetreten. Der Fehler trat auf, weil der ausgewählte Benutzer nicht gefunden werden konnte.",
+  "discord.action.user.role.remove.failure.role.not.found": "Beim Entfernen einer Rolle von einem Discord-Benutzer ist ein Fehler aufgetreten. Der Fehler trat auf, weil die ausgewählte Rolle nicht gefunden werden konnte.",
+  "discord.action.user.role.remove.failure.hierarchy": "Beim Entfernen einer Rolle von einem Discord-Benutzer ist ein Fehler aufgetreten. Der Fehler ist aufgetreten, weil der Bot nicht über die notwendigen Rechte verfügt, um auf die Rolle zuzugreifen."
 }
