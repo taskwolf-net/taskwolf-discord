@@ -31,6 +31,9 @@ import net.taskwolf.discord.trigger.channel.message.ChannelMessageTrigger;
 import net.taskwolf.discord.trigger.channel.message.MessageListener;
 import net.taskwolf.discord.trigger.message.reaction.MessageReactionTrigger;
 import net.taskwolf.discord.trigger.message.reaction.ReactionListener;
+import net.taskwolf.discord.trigger.user.role.RoleListener;
+import net.taskwolf.discord.trigger.user.role.add.UserRoleAddTrigger;
+import net.taskwolf.discord.trigger.user.role.remove.UserRoleRemoveTrigger;
 import org.springframework.boot.SpringApplication;
 
 @ModuleDescription(name = "discord", version = "1.0.0-SNAPSHOT",
@@ -62,6 +65,8 @@ public final class DiscordModule extends Module {
     roleSelect = RoleSelect.create(jda);
     jda.addEventListener(JoinListener.create(
       injector().getInstance(CoreModule.class), jda));
+    jda.addEventListener(RoleListener.create(
+      injector().getInstance(CoreModule.class), jda));
     jda.addEventListener(MessageListener.create(
       injector().getInstance(CoreModule.class), jda));
     jda.addEventListener(MentionListener.create(
@@ -92,6 +97,10 @@ public final class DiscordModule extends Module {
     var databaseKeyspace = injector().getInstance(DatabaseKeyspace.class);
     var repository = TriggerRepository.create();
     repository.registerTrigger(UserJoinTrigger.create(guildSelect,
+      databaseConnection, databaseKeyspace));
+    repository.registerTrigger(UserRoleAddTrigger.create(guildSelect,
+      databaseConnection, databaseKeyspace));
+    repository.registerTrigger(UserRoleRemoveTrigger.create(guildSelect,
       databaseConnection, databaseKeyspace));
     repository.registerTrigger(ChannelMessageTrigger.create(guildSelect,
       channelSelect, databaseConnection, databaseKeyspace));
