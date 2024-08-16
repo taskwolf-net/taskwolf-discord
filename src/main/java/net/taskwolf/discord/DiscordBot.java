@@ -28,7 +28,10 @@ public final class DiscordBot {
     jda = JDABuilder.createDefault(discordConfiguration.token())
       .setActivity(Activity.customStatus(discordConfiguration.activity()))
       .setStatus(OnlineStatus.ONLINE)
+      .enableIntents(GatewayIntent.GUILD_MEMBERS)
+      .enableIntents(GatewayIntent.GUILD_MESSAGES)
       .enableIntents(GatewayIntent.MESSAGE_CONTENT)
+      .enableIntents(GatewayIntent.GUILD_MESSAGE_REACTIONS)
       .build();
     jda.setAutoReconnect(true);
     log.log(Level.INFO, "Discord bot successfully connected");
