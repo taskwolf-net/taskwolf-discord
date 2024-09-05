@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.taskwolf.core.CoreModule;
+import net.taskwolf.core.database.condition.DatabaseCondition;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
@@ -22,7 +23,7 @@ public final class MessageListener extends ListenerAdapter {
       return;
     }
     coreModule.triggerWorkflows("discord", "discord-channel-message-trigger",
-      "channel='" + event.getChannel().getId() + "'",
+      DatabaseCondition.of("channel", event.getChannel().getId()),
       channelMessageInformation(event));
   }
 

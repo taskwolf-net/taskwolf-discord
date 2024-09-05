@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.taskwolf.core.CoreModule;
+import net.taskwolf.core.database.condition.DatabaseCondition;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
@@ -22,7 +23,7 @@ public final class ReactionListener extends ListenerAdapter {
       return;
     }
     coreModule.triggerWorkflows("discord", "discord-message-reaction-trigger",
-      "message='" + event.getMessageId() + "'",
+      DatabaseCondition.of("message", event.getMessageId()),
       messageReactionInformation(event));
   }
 

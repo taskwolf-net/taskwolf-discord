@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleAddEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleRemoveEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.taskwolf.core.CoreModule;
+import net.taskwolf.core.database.condition.DatabaseCondition;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
@@ -25,7 +26,7 @@ public final class RoleListener extends ListenerAdapter {
       return;
     }
     coreModule.triggerWorkflows("discord", "discord-user-role-add-trigger",
-      "guild='" + event.getGuild().getId() + "'",
+      DatabaseCondition.of("guild", event.getGuild().getId()),
       userRoleInformation(event.getMember(), event.getRoles().getFirst()));
   }
 
@@ -36,7 +37,7 @@ public final class RoleListener extends ListenerAdapter {
       return;
     }
     coreModule.triggerWorkflows("discord", "discord-user-role-remove-trigger",
-      "guild='" + event.getGuild().getId() + "'",
+      DatabaseCondition.of("guild", event.getGuild().getId()),
       userRoleInformation(event.getMember(), event.getRoles().getFirst()));
   }
 

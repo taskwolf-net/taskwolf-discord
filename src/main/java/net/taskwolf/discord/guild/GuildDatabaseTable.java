@@ -2,6 +2,8 @@ package net.taskwolf.discord.guild;
 
 import com.google.common.collect.Lists;
 import net.taskwolf.core.database.*;
+import net.taskwolf.core.database.condition.DatabaseComparison;
+import net.taskwolf.core.database.condition.DatabaseCondition;
 
 import java.util.List;
 import java.util.UUID;
@@ -28,8 +30,7 @@ public final class GuildDatabaseTable extends DatabaseTable {
   }
 
   public void addGuild(UUID userId, String guildId) {
-    exists(DatabaseCell.create(userId)).thenAccept(exists ->
-      addGuild(userId, guildId, exists));
+    exists(userId).thenAccept(exists -> addGuild(userId, guildId, exists));
   }
 
   private void addGuild(UUID userId, String guildId, boolean exists) {
@@ -37,8 +38,7 @@ public final class GuildDatabaseTable extends DatabaseTable {
       insertUserGuild(userId, guildId);
       return;
     }
-    selectRow(DatabaseCell.create(userId)).thenAccept(row ->
-      addGuild(userId, guildId, row));
+    selectRow(userId).thenAccept(row -> addGuild(userId, guildId, row));
   }
 
   private void addGuild(UUID userId, String guildId, DatabaseRow row) {
@@ -52,8 +52,7 @@ public final class GuildDatabaseTable extends DatabaseTable {
   }
 
   public void removeGuild(UUID userId, String guildId) {
-    selectRow(DatabaseCell.create(userId)).thenAccept(row ->
-      removeGuild(userId, guildId, row));
+    selectRow(userId).thenAccept(row -> removeGuild(userId, guildId, row));
   }
 
   private void removeGuild(UUID userId, String guildId, DatabaseRow row) {
@@ -67,24 +66,24 @@ public final class GuildDatabaseTable extends DatabaseTable {
   }
 
   public void updateUserGuilds(UUID userId, List<String> guildIds) {
-    update(DatabaseCell.create(userId), DatabaseRow.of(userId, guildIds));
+    update(userId, DatabaseRow.of(userId, guildIds));
   }
 
   public void deleteUserGuilds(UUID userId) {
-    delete(DatabaseCell.create(userId));
+    delete(userId);
   }
 
   public CompletableFuture<Boolean> userGuildsExists(UUID userId) {
-    return exists(DatabaseCell.create(userId));
+    return exists(userId);
   }
 
   public CompletableFuture<Integer> guildOccurNumber(String guildId) {
-    return selectRows("guilds CONTAINS '" + guildId + "'")
-      .thenApply(List::size);
+    var condition = DatabaseCondition.of(DatabaseComparison.create("guilds",
+      guildId, DatabaseComparison.Type.CONTAINS));
+    return selectRows(condition).thenApply(List::size);
   }
 
   public CompletableFuture<List<String>> findGuilds(UUID userId) {
-    return selectRow(DatabaseCell.create(userId))
-      .thenApply(row -> row.findCell(1).listValue());
+    return selectRow(userId).thenApply(row -> row.findCell(1).listValue());
   }
 }

@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.taskwolf.core.CoreModule;
+import net.taskwolf.core.database.condition.DatabaseCondition;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
@@ -32,7 +33,7 @@ public final class MentionListener extends ListenerAdapter {
     var target = matcher.group().replace("<@", "").replace(">", "");
     jda.retrieveUserById(target).queue(user ->
       coreModule.triggerWorkflows("discord", "discord-user-mention-trigger",
-        "guild='" + event.getGuild().getId() + "'",
+        DatabaseCondition.of("guild", event.getGuild().getId()),
         userMentionInformation(event, user)));
   }
 
