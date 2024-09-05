@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.JDA;
 import net.taskwolf.core.user.User;
 import net.taskwolf.core.workflow.component.input.InputComponentSelect;
+import net.taskwolf.core.workflow.component.input.InputComponentSelectEntry;
 import org.json.JSONObject;
 
 import java.util.List;
@@ -17,12 +18,12 @@ public class RoleSelect implements InputComponentSelect {
   private final JDA jda;
 
   @Override
-  public CompletableFuture<List<String>> compile(
+  public CompletableFuture<List<InputComponentSelectEntry>> compile(
     User user, UUID target, Map<String, String> previousInputs
   ) {
     return CompletableFuture.completedFuture(
       jda.getGuildById(previousInputs.get("guildIdentifier")).getRoles()
-        .stream().map(role -> new JSONObject(Map.of("identifier", role.getId(),
-          "name", role.getName())).toString()).collect(Collectors.toList()));
+        .stream().map(role -> InputComponentSelectEntry.create(role.getId(),
+          role.getName())).collect(Collectors.toList()));
   }
 }

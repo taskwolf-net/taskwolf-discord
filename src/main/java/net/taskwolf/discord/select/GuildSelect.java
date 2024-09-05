@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.JDA;
 import net.taskwolf.core.user.User;
 import net.taskwolf.core.workflow.component.input.InputComponentSelect;
+import net.taskwolf.core.workflow.component.input.InputComponentSelectEntry;
 import net.taskwolf.discord.guild.GuildDatabaseTable;
 import org.json.JSONObject;
 
@@ -19,13 +20,13 @@ public class GuildSelect implements InputComponentSelect {
   private final JDA jda;
 
   @Override
-  public CompletableFuture<List<String>> compile(
+  public CompletableFuture<List<InputComponentSelectEntry>> compile(
     User user, UUID target, Map<String, String> previousInputs
   ) {
     return guildDatabaseTable.findGuilds(target)
       .thenApply(guilds -> guilds.stream()
-        .map(guild -> new JSONObject(Map.of("identifier", guild, "name",
-          jda.getGuildById(guild).getName())).toString())
+        .map(guild -> InputComponentSelectEntry.create(guild,
+          jda.getGuildById(guild).getName()))
         .collect(Collectors.toList()));
   }
 }
