@@ -1,0 +1,91 @@
+package com.dulno.discord.action.user.role.add;
+
+import com.google.common.collect.Lists;
+import lombok.AllArgsConstructor;
+import net.dv8tion.jda.api.JDA;
+import com.dulno.core.action.Action;
+import com.dulno.core.action.ActionContentDatabaseTable;
+import com.dulno.core.action.ActionInformation;
+import com.dulno.core.database.*;
+import com.dulno.core.workflow.component.input.InputComponentDataType;
+import com.dulno.core.workflow.component.input.InputComponentSelect;
+import com.dulno.core.workflow.component.input.InputComponentVariable;
+import com.dulno.core.workflow.component.output.OutputComponentVariable;
+
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+
+@AllArgsConstructor(staticName = "create")
+public final class UserRoleAddAction implements Action<UserRoleAddActionExecutor> {
+  public static UserRoleAddAction create(
+    JDA jda, InputComponentSelect guildComponentSelect,
+    InputComponentSelect roleComponentSelect,
+    DatabaseConnection databaseConnection, DatabaseKeyspace databaseKeyspace
+  ) {
+    var contentColumns = Lists.<DatabaseColumn>newArrayList();
+    contentColumns.add(DatabaseColumn.create("guild", DatabaseDataType.TEXT));
+    contentColumns.add(DatabaseColumn.create("user", DatabaseDataType.TEXT));
+    contentColumns.add(DatabaseColumn.create("role", DatabaseDataType.TEXT));
+    return new UserRoleAddAction(jda, guildComponentSelect, roleComponentSelect,
+      ActionContentDatabaseTable.create(databaseConnection, databaseKeyspace,
+        "action_discord_user_role_add", contentColumns));
+  }
+
+  private final JDA jda;
+  private final InputComponentSelect guildComponentSelect;
+  private final InputComponentSelect roleComponentSelect;
+  private final ActionContentDatabaseTable contentDatabaseTable;
+
+  @Override
+  public String type() {
+    return "discord-user-role-add-action";
+  }
+
+  @Override
+  public ActionInformation information() {
+    return ActionInformation.builder()
+      .withName("discord.action.user.role.add.name")
+      .withDescription("discord.action.user.role.add.description")
+      .withInputVariable(InputComponentVariable.createSelect("discord.action.user.role.add.input.server.name",
+        "guildIdentifier", "discord.action.user.role.add.input.server.description", guildComponentSelect))
+      .withInputVariable(InputComponentVariable.createRequired("discord.action.user.role.add.input.user.name",
+        "userIdentifier", "discord.action.user.role.add.input.user.description", InputComponentDataType.TEXT))
+      .withInputVariable(InputComponentVariable.createSelect("discord.action.user.role.add.input.role.name",
+        "roleIdentifier", "discord.action.user.role.add.input.role.description", roleComponentSelect))
+      .withOutputVariable(OutputComponentVariable.create("discord.action.user.role.add.output.user.identifier",
+        "userIdentifier")).build();
+  }
+
+  @Override
+  public void initialize() {
+    contentDatabaseTable.createIfNotExists();
+  }
+
+  @Override
+  public CompletableFuture<Void> insert(UUID actionId, Map<String, Object> content) {
+    return contentDatabaseTable.insertContent(actionId, DatabaseRow.of(
+      content.get("guildIdentifier"), content.get("userIdentifier"),
+      content.get("roleIdentifier")));
+  }
+
+  @Override
+  public CompletableFuture<Map<String, Object>> findContent(UUID triggerId) {
+    return contentDatabaseTable.findContent(triggerId).thenApply(row ->
+      Map.of("guildIdentifier", row.findCell(1).stringValue(),
+        "userIdentifier", row.findCell(2).stringValue(),
+        "roleIdentifier", row.findCell(3).stringValue()));
+  }
+
+  @Override
+  public CompletableFuture<UserRoleAddActionExecutor> build(UUID actionId) {
+    return contentDatabaseTable.findContent(actionId).thenApply(content ->
+      UserRoleAddActionExecutor.create(jda, content.findCell(1).stringValue(),
+        content.findCell(2).stringValue(), content.findCell(3).stringValue()));
+  }
+
+  @Override
+  public CompletableFuture<Void> delete(UUID actionId) {
+    return contentDatabaseTable.deleteContent(actionId);
+  }
+}

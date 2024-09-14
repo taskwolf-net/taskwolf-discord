@@ -1,5 +1,5 @@
 {
-  "discord.account.link.description": "Möchten Sie einen weiteren Discord-Server hinzufügen, um ihn mit Hilfe von Taskwolf in Ihre Automatisierung zu integrieren? Klicken Sie einfach auf das Logo.",
+  "discord.account.link.description": "Möchten Sie einen weiteren Discord-Server hinzufügen, um ihn mit Hilfe von Dulno in Ihre Automatisierung zu integrieren? Klicken Sie einfach auf das Logo.",
 
   "discord.trigger.user.join.name": "Benutzer tritt Server bei",
   "discord.trigger.user.join.description": "Wird ausgelöst, wenn ein Spieler den Server betritt",
