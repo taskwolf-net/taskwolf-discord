@@ -1,5 +1,6 @@
 package com.dulno.discord;
 
+import com.dulno.core.account.AccountLinkEntry;
 import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.JDA;
@@ -27,10 +28,12 @@ public final class DiscordAccountLink implements AccountLink {
   }
 
   @Override
-  public CompletableFuture<List<String>> findAccounts(UUID id) {
-    return guildDatabaseTable.findGuilds(id).thenApply(guilds ->
-      guilds.stream().map(guild -> new JSONObject(Map.of("identifier", guild, "name",
-        jda.getGuildById(guild).getName())).toString()).collect(Collectors.toList()));
+  public CompletableFuture<List<AccountLinkEntry>> findAccounts(UUID id) {
+    return guildDatabaseTable.findGuilds(id)
+      .thenApply(guilds -> guilds.stream()
+        .map(guild -> AccountLinkEntry.create(guild,
+          jda.getGuildById(guild).getName()))
+        .toList());
   }
 
   @Override
