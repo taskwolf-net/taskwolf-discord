@@ -3,9 +3,9 @@ package com.dulno.discord.action.channel.delete;
 import com.datastax.oss.driver.shaded.guava.common.collect.Maps;
 import lombok.AllArgsConstructor;
 import net.dv8tion.jda.api.JDA;
-import com.dulno.core.action.ActionExecutor;
-import com.dulno.core.action.ActionResult;
-import com.dulno.core.workflow.placeholder.PlaceholderDissolve;
+import com.dulno.workflow.action.ActionExecutor;
+import com.dulno.workflow.action.ActionResult;
+import com.dulno.workflow.placeholder.PlaceholderDissolve;
 
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;

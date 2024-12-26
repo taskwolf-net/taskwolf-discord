@@ -10,19 +10,19 @@ import com.dulno.discord.trigger.user.mention.MentionListener;
 import com.dulno.discord.trigger.user.mention.UserMentionTrigger;
 import com.dulno.discord.trigger.user.role.RoleListener;
 import com.dulno.discord.trigger.user.role.add.UserRoleAddTrigger;
+import com.dulno.workflow.WorkflowModule;
+import com.dulno.workflow.action.ActionRepository;
+import com.dulno.workflow.integration.Integration;
 import com.google.inject.Injector;
-import com.dulno.core.CoreModule;
 import com.dulno.core.account.AccountLink;
-import com.dulno.core.action.ActionRepository;
 import com.dulno.core.database.DatabaseConnection;
 import com.dulno.core.database.DatabaseKeyspace;
 import com.dulno.core.log.Log;
-import com.dulno.core.module.Module;
 import com.dulno.core.module.ModuleDescription;
 import com.dulno.core.module.ModuleInformation;
 import com.dulno.core.module.ModuleLoadPriority;
-import com.dulno.core.trigger.TriggerRepository;
-import com.dulno.core.workflow.component.input.InputComponentSelect;
+import com.dulno.workflow.trigger.TriggerRepository;
+import com.dulno.workflow.component.input.InputComponentSelect;
 import com.dulno.discord.action.channel.create.ChannelCreateAction;
 import com.dulno.discord.action.channel.delete.ChannelDeleteAction;
 import com.dulno.discord.action.channel.message.ChannelMessageAction;
@@ -38,7 +38,7 @@ import org.springframework.boot.SpringApplication;
 
 @ModuleDescription(name = "discord", version = "1.0.0-SNAPSHOT",
   priority = ModuleLoadPriority.NEUTRAL)
-public final class DiscordModule extends Module {
+public final class DiscordModule extends Integration {
   private Log log;
   private AccountLink accountLink;
   private InputComponentSelect guildSelect;
@@ -63,16 +63,12 @@ public final class DiscordModule extends Module {
     guildSelect = GuildSelect.create(guildDatabaseTable, jda);
     channelSelect = ChannelSelect.create(jda);
     roleSelect = RoleSelect.create(jda);
-    jda.addEventListener(JoinListener.create(
-      injector().getInstance(CoreModule.class), jda));
-    jda.addEventListener(RoleListener.create(
-      injector().getInstance(CoreModule.class), jda));
-    jda.addEventListener(MessageListener.create(
-      injector().getInstance(CoreModule.class), jda));
-    jda.addEventListener(MentionListener.create(
-      injector().getInstance(CoreModule.class), jda));
-    jda.addEventListener(ReactionListener.create(
-      injector().getInstance(CoreModule.class), jda));
+    var workflowModule = injector().getInstance(WorkflowModule.class);
+    jda.addEventListener(JoinListener.create(workflowModule, jda));
+    jda.addEventListener(RoleListener.create(workflowModule, jda));
+    jda.addEventListener(MessageListener.create(workflowModule, jda));
+    jda.addEventListener(MentionListener.create(workflowModule, jda));
+    jda.addEventListener(ReactionListener.create(workflowModule, jda));
   }
 
   @Override

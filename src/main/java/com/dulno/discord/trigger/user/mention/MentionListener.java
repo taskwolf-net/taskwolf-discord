@@ -6,7 +6,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import com.dulno.core.CoreModule;
+import com.dulno.workflow.WorkflowModule;
 import com.dulno.core.database.condition.DatabaseCondition;
 import org.jetbrains.annotations.NotNull;
 
@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
 
 @RequiredArgsConstructor(staticName = "create")
 public final class MentionListener extends ListenerAdapter {
-  private final CoreModule coreModule;
+  private final WorkflowModule workflowModule;
   private final JDA jda;
   private final Pattern pattern = Pattern.compile("<@\\d{18}>");
 
@@ -32,7 +32,7 @@ public final class MentionListener extends ListenerAdapter {
     }
     var target = matcher.group().replace("<@", "").replace(">", "");
     jda.retrieveUserById(target).queue(user ->
-      coreModule.triggerWorkflows("discord", "discord-user-mention-trigger",
+      workflowModule.triggerWorkflows("discord", "discord-user-mention-trigger",
         DatabaseCondition.of("guild", event.getGuild().getId()),
         userMentionInformation(event, user)));
   }
