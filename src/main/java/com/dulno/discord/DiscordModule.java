@@ -91,19 +91,20 @@ public final class DiscordModule extends Integration {
   public TriggerRepository triggerRepository() {
     var databaseConnection = injector().getInstance(DatabaseConnection.class);
     var databaseKeyspace = injector().getInstance(DatabaseKeyspace.class);
+    var guildDatabaseTable = injector().getInstance(GuildDatabaseTable.class);
     var repository = TriggerRepository.create();
-    repository.registerTrigger(UserJoinTrigger.create(guildSelect,
-      databaseConnection, databaseKeyspace));
-    repository.registerTrigger(UserRoleAddTrigger.create(guildSelect,
-      databaseConnection, databaseKeyspace));
-    repository.registerTrigger(UserRoleRemoveTrigger.create(guildSelect,
-      databaseConnection, databaseKeyspace));
-    repository.registerTrigger(ChannelMessageTrigger.create(guildSelect,
-      channelSelect, databaseConnection, databaseKeyspace));
-    repository.registerTrigger(UserMentionTrigger.create(guildSelect,
-      databaseConnection, databaseKeyspace));
-    repository.registerTrigger(MessageReactionTrigger.create(guildSelect,
-      databaseConnection, databaseKeyspace));
+    repository.registerTrigger(UserJoinTrigger.create(guildDatabaseTable,
+      guildSelect, databaseConnection, databaseKeyspace));
+    repository.registerTrigger(UserRoleAddTrigger.create(guildDatabaseTable,
+      guildSelect, databaseConnection, databaseKeyspace));
+    repository.registerTrigger(UserRoleRemoveTrigger.create(guildDatabaseTable,
+      guildSelect, databaseConnection, databaseKeyspace));
+    repository.registerTrigger(ChannelMessageTrigger.create(guildDatabaseTable,
+      guildSelect, channelSelect, databaseConnection, databaseKeyspace));
+    repository.registerTrigger(UserMentionTrigger.create(guildDatabaseTable,
+      guildSelect, databaseConnection, databaseKeyspace));
+    repository.registerTrigger(MessageReactionTrigger.create(guildDatabaseTable,
+      guildSelect, databaseConnection, databaseKeyspace));
     return repository;
   }
 
@@ -111,20 +112,23 @@ public final class DiscordModule extends Integration {
   public ActionRepository actionRepository() {
     var databaseConnection = injector().getInstance(DatabaseConnection.class);
     var databaseKeyspace = injector().getInstance(DatabaseKeyspace.class);
+    var guildDatabaseTable = injector().getInstance(GuildDatabaseTable.class);
     var repository = ActionRepository.create();
     repository.registerAction(ChannelCreateAction.create(discordBot.jda(),
-      guildSelect, databaseConnection, databaseKeyspace));
+      guildDatabaseTable, guildSelect, databaseConnection, databaseKeyspace));
     repository.registerAction(ChannelDeleteAction.create(discordBot.jda(),
-      guildSelect, databaseConnection, databaseKeyspace));
+      guildDatabaseTable, guildSelect, databaseConnection, databaseKeyspace));
     repository.registerAction(ChannelMessageAction.create(discordBot.jda(),
-      guildSelect, channelSelect, databaseConnection,
+      guildDatabaseTable, guildSelect, channelSelect, databaseConnection,
       databaseKeyspace));
     repository.registerAction(UserRetrieveAction.create(discordBot.jda(),
-      guildSelect, databaseConnection, databaseKeyspace));
+      guildDatabaseTable, guildSelect, databaseConnection, databaseKeyspace));
     repository.registerAction(UserRoleAddAction.create(discordBot.jda(),
-      guildSelect, roleSelect, databaseConnection, databaseKeyspace));
+      guildDatabaseTable, guildSelect, roleSelect, databaseConnection,
+      databaseKeyspace));
     repository.registerAction(UserRoleRemoveAction.create(discordBot.jda(),
-      guildSelect, roleSelect, databaseConnection, databaseKeyspace));
+      guildDatabaseTable, guildSelect, roleSelect, databaseConnection,
+      databaseKeyspace));
     return repository;
   }
 }

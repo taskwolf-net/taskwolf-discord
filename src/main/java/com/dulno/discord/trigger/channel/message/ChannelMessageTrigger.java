@@ -1,5 +1,6 @@
 package com.dulno.discord.trigger.channel.message;
 
+import com.dulno.discord.guild.GuildDatabaseTable;
 import com.google.common.collect.Lists;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -20,18 +21,22 @@ import java.util.concurrent.CompletableFuture;
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public final class ChannelMessageTrigger implements Trigger {
   public static ChannelMessageTrigger create(
+    GuildDatabaseTable guildDatabaseTable,
     InputComponentSelect guildComponentSelect,
     InputComponentSelect channelComponentSelect,
     DatabaseConnection databaseConnection, DatabaseKeyspace databaseKeyspace
   ) {
     var contentColumns = Lists.<DatabaseColumn>newArrayList();
+    contentColumns.add(DatabaseColumn.create("owner", DatabaseDataType.UUID));
     contentColumns.add(DatabaseColumn.create("guild", DatabaseDataType.TEXT));
     contentColumns.add(DatabaseColumn.create("channel", DatabaseDataType.TEXT));
-    return new ChannelMessageTrigger(guildComponentSelect, channelComponentSelect,
+    return new ChannelMessageTrigger(guildDatabaseTable, guildComponentSelect,
+      channelComponentSelect,
       TriggerContentDatabaseTable.create(databaseConnection, databaseKeyspace,
         "trigger_discord_channel_message", contentColumns));
   }
 
+  private final GuildDatabaseTable guildDatabaseTable;
   private final InputComponentSelect guildComponentSelect;
   private final InputComponentSelect channelComponentSelect;
   private final TriggerContentDatabaseTable contentDatabaseTable;
@@ -65,16 +70,37 @@ public final class ChannelMessageTrigger implements Trigger {
   }
 
   @Override
-  public CompletableFuture<Void> insert(UUID triggerId, Map<String, Object> content) {
-    return contentDatabaseTable.insertContent(triggerId, DatabaseRow.of(
+  public CompletableFuture<Void> insert(
+    UUID triggerId, UUID ownerId, Map<String, Object> content
+  ) {
+    return contentDatabaseTable.insertContent(triggerId, DatabaseRow.of(ownerId,
       content.get("guildIdentifier"), content.get("channelIdentifier")));
+  }
+
+  @Override
+  public CompletableFuture<Boolean> checkExecution(UUID triggerId) {
+    return contentDatabaseTable.findContent(triggerId)
+      .thenCompose(row -> guildDatabaseTable.userGuildsExists(
+        row.findCell(1).uuidValue())
+        .thenCompose(exists -> checkExecution(row.findCell(1).uuidValue(),
+          row.findCell(2).stringValue(), exists)));
+  }
+
+  public CompletableFuture<Boolean> checkExecution(
+    UUID ownerId, String guildId, boolean hasGuilds
+  ) {
+    if (!hasGuilds) {
+      return CompletableFuture.completedFuture(false);
+    }
+    return guildDatabaseTable.findGuilds(ownerId)
+      .thenApply(guilds -> guilds.contains(guildId));
   }
 
   @Override
   public CompletableFuture<Map<String, Object>> findContent(UUID triggerId) {
     return contentDatabaseTable.findContent(triggerId).thenApply(row ->
-      Map.of("guildIdentifier", row.findCell(1).stringValue(),
-        "channelIdentifier", row.findCell(2).stringValue()));
+      Map.of("guildIdentifier", row.findCell(2).stringValue(),
+        "channelIdentifier", row.findCell(3).stringValue()));
   }
 
   @Override

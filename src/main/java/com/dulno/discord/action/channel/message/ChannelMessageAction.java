@@ -1,5 +1,6 @@
 package com.dulno.discord.action.channel.message;
 
+import com.dulno.discord.guild.GuildDatabaseTable;
 import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
 import net.dv8tion.jda.api.JDA;
@@ -19,20 +20,24 @@ import java.util.concurrent.CompletableFuture;
 @AllArgsConstructor(staticName = "create")
 public final class ChannelMessageAction implements Action<ChannelMessageActionExecutor> {
   public static ChannelMessageAction create(
-    JDA jda, InputComponentSelect guildComponentSelect,
+    JDA jda, GuildDatabaseTable guildDatabaseTable,
+    InputComponentSelect guildComponentSelect,
     InputComponentSelect channelComponentSelect,
     DatabaseConnection databaseConnection, DatabaseKeyspace databaseKeyspace
   ) {
     var contentColumns = Lists.<DatabaseColumn>newArrayList();
+    contentColumns.add(DatabaseColumn.create("owner", DatabaseDataType.UUID));
     contentColumns.add(DatabaseColumn.create("guild", DatabaseDataType.TEXT));
     contentColumns.add(DatabaseColumn.create("channel", DatabaseDataType.TEXT));
     contentColumns.add(DatabaseColumn.create("message", DatabaseDataType.TEXT));
-    return new ChannelMessageAction(jda, guildComponentSelect, channelComponentSelect,
+    return new ChannelMessageAction(jda, guildDatabaseTable, guildComponentSelect,
+      channelComponentSelect,
       ActionContentDatabaseTable.create(databaseConnection, databaseKeyspace,
         "action_discord_channel_message", contentColumns));
   }
 
   private final JDA jda;
+  private final GuildDatabaseTable guildDatabaseTable;
   private final InputComponentSelect guildComponentSelect;
   private final InputComponentSelect channelComponentSelect;
   private final ActionContentDatabaseTable contentDatabaseTable;
@@ -64,8 +69,10 @@ public final class ChannelMessageAction implements Action<ChannelMessageActionEx
   }
 
   @Override
-  public CompletableFuture<Void> insert(UUID actionId, Map<String, Object> content) {
-    return contentDatabaseTable.insertContent(actionId, DatabaseRow.of(
+  public CompletableFuture<Void> insert(
+    UUID actionId, UUID ownerId, Map<String, Object> content
+  ) {
+    return contentDatabaseTable.insertContent(actionId, DatabaseRow.of(ownerId,
       content.get("guildIdentifier"), content.get("channelIdentifier"),
       content.get("message")));
   }
@@ -73,16 +80,17 @@ public final class ChannelMessageAction implements Action<ChannelMessageActionEx
   @Override
   public CompletableFuture<Map<String, Object>> findContent(UUID triggerId) {
     return contentDatabaseTable.findContent(triggerId).thenApply(row ->
-      Map.of("guildIdentifier", row.findCell(1).stringValue(),
-        "channelIdentifier", row.findCell(2).stringValue(),
-        "message", row.findCell(3).stringValue()));
+      Map.of("guildIdentifier", row.findCell(2).stringValue(),
+        "channelIdentifier", row.findCell(3).stringValue(),
+        "message", row.findCell(4).stringValue()));
   }
 
   @Override
   public CompletableFuture<ChannelMessageActionExecutor> build(UUID actionId) {
     return contentDatabaseTable.findContent(actionId).thenApply(content ->
-      ChannelMessageActionExecutor.create(jda, content.findCell(1).stringValue(),
-        content.findCell(2).stringValue(), content.findCell(3).stringValue()));
+      ChannelMessageActionExecutor.create(jda, guildDatabaseTable,
+        content.findCell(1).uuidValue(), content.findCell(2).stringValue(),
+        content.findCell(3).stringValue(), content.findCell(4).stringValue()));
   }
 
   @Override

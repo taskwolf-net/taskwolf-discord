@@ -1,5 +1,6 @@
 package com.dulno.discord.trigger.message.reaction;
 
+import com.dulno.discord.guild.GuildDatabaseTable;
 import com.google.common.collect.Lists;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -21,17 +22,20 @@ import java.util.concurrent.CompletableFuture;
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public final class MessageReactionTrigger implements Trigger {
   public static MessageReactionTrigger create(
+    GuildDatabaseTable guildDatabaseTable,
     InputComponentSelect guildComponentSelect,
     DatabaseConnection databaseConnection, DatabaseKeyspace databaseKeyspace
   ) {
     var contentColumns = Lists.<DatabaseColumn>newArrayList();
+    contentColumns.add(DatabaseColumn.create("owner", DatabaseDataType.UUID));
     contentColumns.add(DatabaseColumn.create("guild", DatabaseDataType.TEXT));
     contentColumns.add(DatabaseColumn.create("message", DatabaseDataType.TEXT));
-    return new MessageReactionTrigger(guildComponentSelect,
+    return new MessageReactionTrigger(guildDatabaseTable, guildComponentSelect,
       TriggerContentDatabaseTable.create(databaseConnection, databaseKeyspace,
         "trigger_discord_message_reaction", contentColumns));
   }
 
+  private final GuildDatabaseTable guildDatabaseTable;
   private final InputComponentSelect guildComponentSelect;
   private final TriggerContentDatabaseTable contentDatabaseTable;
 
@@ -64,16 +68,37 @@ public final class MessageReactionTrigger implements Trigger {
   }
 
   @Override
-  public CompletableFuture<Void> insert(UUID triggerId, Map<String, Object> content) {
-    return contentDatabaseTable.insertContent(triggerId, DatabaseRow.of(
+  public CompletableFuture<Void> insert(
+    UUID triggerId, UUID ownerId, Map<String, Object> content
+  ) {
+    return contentDatabaseTable.insertContent(triggerId, DatabaseRow.of(ownerId,
       content.get("guildIdentifier"), content.get("messageIdentifier")));
+  }
+
+  @Override
+  public CompletableFuture<Boolean> checkExecution(UUID triggerId) {
+    return contentDatabaseTable.findContent(triggerId)
+      .thenCompose(row -> guildDatabaseTable.userGuildsExists(
+          row.findCell(1).uuidValue())
+        .thenCompose(exists -> checkExecution(row.findCell(1).uuidValue(),
+          row.findCell(2).stringValue(), exists)));
+  }
+
+  public CompletableFuture<Boolean> checkExecution(
+    UUID ownerId, String guildId, boolean hasGuilds
+  ) {
+    if (!hasGuilds) {
+      return CompletableFuture.completedFuture(false);
+    }
+    return guildDatabaseTable.findGuilds(ownerId)
+      .thenApply(guilds -> guilds.contains(guildId));
   }
 
   @Override
   public CompletableFuture<Map<String, Object>> findContent(UUID triggerId) {
     return contentDatabaseTable.findContent(triggerId).thenApply(row ->
-      Map.of("guildIdentifier", row.findCell(1).stringValue(),
-        "messageIdentifier", row.findCell(2).stringValue()));
+      Map.of("guildIdentifier", row.findCell(2).stringValue(),
+        "messageIdentifier", row.findCell(3).stringValue()));
   }
 
   @Override

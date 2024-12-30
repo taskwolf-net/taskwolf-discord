@@ -1,5 +1,6 @@
 package com.dulno.discord.action.channel.create;
 
+import com.dulno.discord.guild.GuildDatabaseTable;
 import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
 import net.dv8tion.jda.api.JDA;
@@ -19,18 +20,21 @@ import java.util.concurrent.CompletableFuture;
 @AllArgsConstructor(staticName = "create")
 public final class ChannelCreateAction implements Action<ChannelCreateActionExecutor> {
   public static ChannelCreateAction create(
-    JDA jda, InputComponentSelect guildComponentSelect,
+    JDA jda, GuildDatabaseTable guildDatabaseTable,
+    InputComponentSelect guildComponentSelect,
     DatabaseConnection databaseConnection, DatabaseKeyspace databaseKeyspace
   ) {
     var contentColumns = Lists.<DatabaseColumn>newArrayList();
+    contentColumns.add(DatabaseColumn.create("owner", DatabaseDataType.UUID));
     contentColumns.add(DatabaseColumn.create("guild", DatabaseDataType.TEXT));
     contentColumns.add(DatabaseColumn.create("name", DatabaseDataType.TEXT));
-    return new ChannelCreateAction(jda, guildComponentSelect,
+    return new ChannelCreateAction(jda, guildDatabaseTable, guildComponentSelect,
       ActionContentDatabaseTable.create(databaseConnection, databaseKeyspace,
         "action_discord_channel_create", contentColumns));
   }
 
   private final JDA jda;
+  private final GuildDatabaseTable guildDatabaseTable;
   private final InputComponentSelect guildComponentSelect;
   private final ActionContentDatabaseTable contentDatabaseTable;
 
@@ -60,23 +64,26 @@ public final class ChannelCreateAction implements Action<ChannelCreateActionExec
   }
 
   @Override
-  public CompletableFuture<Void> insert(UUID actionId, Map<String, Object> content) {
-    return contentDatabaseTable.insertContent(actionId, DatabaseRow.of(
+  public CompletableFuture<Void> insert(
+    UUID actionId, UUID ownerId, Map<String, Object> content
+  ) {
+    return contentDatabaseTable.insertContent(actionId, DatabaseRow.of(ownerId,
       content.get("guildIdentifier"), content.get("name")));
   }
 
   @Override
   public CompletableFuture<Map<String, Object>> findContent(UUID triggerId) {
     return contentDatabaseTable.findContent(triggerId).thenApply(row ->
-      Map.of("guildIdentifier", row.findCell(1).stringValue(),
-        "name", row.findCell(2).stringValue()));
+      Map.of("guildIdentifier", row.findCell(2).stringValue(),
+        "name", row.findCell(3).stringValue()));
   }
 
   @Override
   public CompletableFuture<ChannelCreateActionExecutor> build(UUID actionId) {
     return contentDatabaseTable.findContent(actionId).thenApply(content ->
-      ChannelCreateActionExecutor.create(jda, content.findCell(1).stringValue(),
-        content.findCell(2).stringValue()));
+      ChannelCreateActionExecutor.create(jda, guildDatabaseTable,
+        content.findCell(1).uuidValue(), content.findCell(2).stringValue(),
+        content.findCell(3).stringValue()));
   }
 
   @Override

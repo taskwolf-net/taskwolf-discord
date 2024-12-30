@@ -1,5 +1,6 @@
 package com.dulno.discord.action.user.role.remove;
 
+import com.dulno.discord.guild.GuildDatabaseTable;
 import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
 import net.dv8tion.jda.api.JDA;
@@ -19,20 +20,24 @@ import java.util.concurrent.CompletableFuture;
 @AllArgsConstructor(staticName = "create")
 public final class UserRoleRemoveAction implements Action<UserRoleRemoveActionExecutor> {
   public static UserRoleRemoveAction create(
-    JDA jda, InputComponentSelect guildComponentSelect,
+    JDA jda, GuildDatabaseTable guildDatabaseTable,
+    InputComponentSelect guildComponentSelect,
     InputComponentSelect roleComponentSelect,
     DatabaseConnection databaseConnection, DatabaseKeyspace databaseKeyspace
   ) {
     var contentColumns = Lists.<DatabaseColumn>newArrayList();
+    contentColumns.add(DatabaseColumn.create("owner", DatabaseDataType.UUID));
     contentColumns.add(DatabaseColumn.create("guild", DatabaseDataType.TEXT));
     contentColumns.add(DatabaseColumn.create("user", DatabaseDataType.TEXT));
     contentColumns.add(DatabaseColumn.create("role", DatabaseDataType.TEXT));
-    return new UserRoleRemoveAction(jda, guildComponentSelect, roleComponentSelect,
+    return new UserRoleRemoveAction(jda, guildDatabaseTable, guildComponentSelect,
+      roleComponentSelect,
       ActionContentDatabaseTable.create(databaseConnection, databaseKeyspace,
         "action_discord_user_role_remove", contentColumns));
   }
 
   private final JDA jda;
+  private final GuildDatabaseTable guildDatabaseTable;
   private final InputComponentSelect guildComponentSelect;
   private final InputComponentSelect roleComponentSelect;
   private final ActionContentDatabaseTable contentDatabaseTable;
@@ -63,8 +68,10 @@ public final class UserRoleRemoveAction implements Action<UserRoleRemoveActionEx
   }
 
   @Override
-  public CompletableFuture<Void> insert(UUID actionId, Map<String, Object> content) {
-    return contentDatabaseTable.insertContent(actionId, DatabaseRow.of(
+  public CompletableFuture<Void> insert(
+    UUID actionId, UUID ownerId, Map<String, Object> content
+  ) {
+    return contentDatabaseTable.insertContent(actionId, DatabaseRow.of(ownerId,
       content.get("guildIdentifier"), content.get("userIdentifier"),
       content.get("roleIdentifier")));
   }
@@ -72,16 +79,17 @@ public final class UserRoleRemoveAction implements Action<UserRoleRemoveActionEx
   @Override
   public CompletableFuture<Map<String, Object>> findContent(UUID triggerId) {
     return contentDatabaseTable.findContent(triggerId).thenApply(row ->
-      Map.of("guildIdentifier", row.findCell(1).stringValue(),
-        "userIdentifier", row.findCell(2).stringValue(),
-        "roleIdentifier", row.findCell(3).stringValue()));
+      Map.of("guildIdentifier", row.findCell(2).stringValue(),
+        "userIdentifier", row.findCell(3).stringValue(),
+        "roleIdentifier", row.findCell(4).stringValue()));
   }
 
   @Override
   public CompletableFuture<UserRoleRemoveActionExecutor> build(UUID actionId) {
     return contentDatabaseTable.findContent(actionId).thenApply(content ->
-      UserRoleRemoveActionExecutor.create(jda, content.findCell(1).stringValue(),
-        content.findCell(2).stringValue(), content.findCell(3).stringValue()));
+      UserRoleRemoveActionExecutor.create(jda, guildDatabaseTable,
+        content.findCell(1).uuidValue(), content.findCell(2).stringValue(),
+        content.findCell(3).stringValue(), content.findCell(4).stringValue()));
   }
 
   @Override

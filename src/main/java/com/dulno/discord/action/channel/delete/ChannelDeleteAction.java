@@ -1,5 +1,6 @@
 package com.dulno.discord.action.channel.delete;
 
+import com.dulno.discord.guild.GuildDatabaseTable;
 import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
 import net.dv8tion.jda.api.JDA;
@@ -19,18 +20,21 @@ import java.util.concurrent.CompletableFuture;
 @AllArgsConstructor(staticName = "create")
 public final class ChannelDeleteAction implements Action<ChannelDeleteActionExecutor> {
   public static ChannelDeleteAction create(
-    JDA jda, InputComponentSelect guildComponentSelect,
+    JDA jda, GuildDatabaseTable guildDatabaseTable,
+    InputComponentSelect guildComponentSelect,
     DatabaseConnection databaseConnection, DatabaseKeyspace databaseKeyspace
   ) {
     var contentColumns = Lists.<DatabaseColumn>newArrayList();
+    contentColumns.add(DatabaseColumn.create("owner", DatabaseDataType.UUID));
     contentColumns.add(DatabaseColumn.create("guild", DatabaseDataType.TEXT));
     contentColumns.add(DatabaseColumn.create("channel", DatabaseDataType.TEXT));
-    return new ChannelDeleteAction(jda, guildComponentSelect,
+    return new ChannelDeleteAction(jda, guildDatabaseTable, guildComponentSelect,
       ActionContentDatabaseTable.create(databaseConnection, databaseKeyspace,
         "action_discord_channel_delete", contentColumns));
   }
 
   private final JDA jda;
+  private final GuildDatabaseTable guildDatabaseTable;
   private final InputComponentSelect guildComponentSelect;
   private final ActionContentDatabaseTable contentDatabaseTable;
 
@@ -58,23 +62,26 @@ public final class ChannelDeleteAction implements Action<ChannelDeleteActionExec
   }
 
   @Override
-  public CompletableFuture<Void> insert(UUID actionId, Map<String, Object> content) {
-    return contentDatabaseTable.insertContent(actionId, DatabaseRow.of(
+  public CompletableFuture<Void> insert(
+    UUID actionId, UUID ownerId, Map<String, Object> content
+  ) {
+    return contentDatabaseTable.insertContent(actionId, DatabaseRow.of(ownerId,
       content.get("guildIdentifier"), content.get("channelIdentifier")));
   }
 
   @Override
   public CompletableFuture<Map<String, Object>> findContent(UUID triggerId) {
     return contentDatabaseTable.findContent(triggerId).thenApply(row ->
-      Map.of("guildIdentifier", row.findCell(1).stringValue(),
-        "channelIdentifier", row.findCell(2).stringValue()));
+      Map.of("guildIdentifier", row.findCell(2).stringValue(),
+        "channelIdentifier", row.findCell(3).stringValue()));
   }
 
   @Override
   public CompletableFuture<ChannelDeleteActionExecutor> build(UUID actionId) {
     return contentDatabaseTable.findContent(actionId).thenApply(content ->
-      ChannelDeleteActionExecutor.create(jda, content.findCell(1).stringValue(),
-        content.findCell(2).stringValue()));
+      ChannelDeleteActionExecutor.create(jda, guildDatabaseTable,
+        content.findCell(1).uuidValue(), content.findCell(2).stringValue(),
+        content.findCell(3).stringValue()));
   }
 
   @Override
