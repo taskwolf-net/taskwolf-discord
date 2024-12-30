@@ -61,8 +61,8 @@ public final class DiscordModule extends Integration {
     var guildDatabaseTable = injector().getInstance(GuildDatabaseTable.class);
     accountLink = DiscordAccountLink.create(jda, guildDatabaseTable);
     guildSelect = GuildSelect.create(guildDatabaseTable, jda);
-    channelSelect = ChannelSelect.create(jda);
-    roleSelect = RoleSelect.create(jda);
+    channelSelect = ChannelSelect.create(jda, guildDatabaseTable);
+    roleSelect = RoleSelect.create(jda, guildDatabaseTable);
     var workflowModule = injector().getInstance(WorkflowModule.class);
     jda.addEventListener(JoinListener.create(workflowModule, jda));
     jda.addEventListener(RoleListener.create(workflowModule, jda));
