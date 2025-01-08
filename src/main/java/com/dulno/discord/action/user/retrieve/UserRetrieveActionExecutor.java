@@ -36,7 +36,7 @@ public final class UserRetrieveActionExecutor implements ActionExecutor {
       return ActionResult.futureFailure("discord.action.user.retrieve.failure.server.not.found");
     }
     return guildDatabaseTable.findGuilds(ownerId)
-      .thenCompose(this::checkUserGuilds);
+      .thenComposeAsync(this::checkUserGuilds);
   }
 
   public CompletableFuture<ActionResult> checkUserGuilds(List<String> guilds) {

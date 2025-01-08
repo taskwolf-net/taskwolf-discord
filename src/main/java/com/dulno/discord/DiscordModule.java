@@ -1,5 +1,6 @@
 package com.dulno.discord;
 
+import com.dulno.discord.action.channel.embed.ChannelEmbedAction;
 import com.dulno.discord.trigger.channel.message.ChannelMessageTrigger;
 import com.dulno.discord.trigger.channel.message.MessageListener;
 import com.dulno.discord.trigger.message.reaction.MessageReactionTrigger;
@@ -93,14 +94,14 @@ public final class DiscordModule extends Integration {
     var databaseKeyspace = injector().getInstance(DatabaseKeyspace.class);
     var guildDatabaseTable = injector().getInstance(GuildDatabaseTable.class);
     var repository = TriggerRepository.create();
+    repository.registerTrigger(ChannelMessageTrigger.create(guildDatabaseTable,
+      guildSelect, channelSelect, databaseConnection, databaseKeyspace));
     repository.registerTrigger(UserJoinTrigger.create(guildDatabaseTable,
       guildSelect, databaseConnection, databaseKeyspace));
     repository.registerTrigger(UserRoleAddTrigger.create(guildDatabaseTable,
       guildSelect, databaseConnection, databaseKeyspace));
     repository.registerTrigger(UserRoleRemoveTrigger.create(guildDatabaseTable,
       guildSelect, databaseConnection, databaseKeyspace));
-    repository.registerTrigger(ChannelMessageTrigger.create(guildDatabaseTable,
-      guildSelect, channelSelect, databaseConnection, databaseKeyspace));
     repository.registerTrigger(UserMentionTrigger.create(guildDatabaseTable,
       guildSelect, databaseConnection, databaseKeyspace));
     repository.registerTrigger(MessageReactionTrigger.create(guildDatabaseTable,
@@ -114,13 +115,16 @@ public final class DiscordModule extends Integration {
     var databaseKeyspace = injector().getInstance(DatabaseKeyspace.class);
     var guildDatabaseTable = injector().getInstance(GuildDatabaseTable.class);
     var repository = ActionRepository.create();
+    repository.registerAction(ChannelMessageAction.create(discordBot.jda(),
+      guildDatabaseTable, guildSelect, channelSelect, databaseConnection,
+      databaseKeyspace));
+    repository.registerAction(ChannelEmbedAction.create(discordBot.jda(),
+      guildDatabaseTable, guildSelect, channelSelect, databaseConnection,
+      databaseKeyspace));
     repository.registerAction(ChannelCreateAction.create(discordBot.jda(),
       guildDatabaseTable, guildSelect, databaseConnection, databaseKeyspace));
     repository.registerAction(ChannelDeleteAction.create(discordBot.jda(),
       guildDatabaseTable, guildSelect, databaseConnection, databaseKeyspace));
-    repository.registerAction(ChannelMessageAction.create(discordBot.jda(),
-      guildDatabaseTable, guildSelect, channelSelect, databaseConnection,
-      databaseKeyspace));
     repository.registerAction(UserRetrieveAction.create(discordBot.jda(),
       guildDatabaseTable, guildSelect, databaseConnection, databaseKeyspace));
     repository.registerAction(UserRoleAddAction.create(discordBot.jda(),

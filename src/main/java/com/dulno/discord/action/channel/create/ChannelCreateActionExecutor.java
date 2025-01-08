@@ -35,7 +35,7 @@ public final class ChannelCreateActionExecutor implements ActionExecutor {
       return ActionResult.futureFailure("discord.action.channel.create.failure.server.not.found");
     }
     return guildDatabaseTable.findGuilds(ownerId)
-      .thenCompose(this::checkUserGuilds);
+      .thenComposeAsync(this::checkUserGuilds);
   }
 
   public CompletableFuture<ActionResult> checkUserGuilds(List<String> guilds) {

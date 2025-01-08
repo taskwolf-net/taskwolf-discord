@@ -39,7 +39,7 @@ public final class UserRoleAddActionExecutor implements ActionExecutor {
       return ActionResult.futureFailure("discord.action.user.role.add.failure.server.not.found");
     }
     return guildDatabaseTable.findGuilds(ownerId)
-      .thenCompose(this::checkUserGuilds);
+      .thenComposeAsync(this::checkUserGuilds);
   }
 
   public CompletableFuture<ActionResult> checkUserGuilds(List<String> guilds) {

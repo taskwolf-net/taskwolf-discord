@@ -34,7 +34,7 @@ public final class ChannelDeleteActionExecutor implements ActionExecutor {
       return ActionResult.futureFailure("discord.action.channel.delete.failure.server.not.found");
     }
     return guildDatabaseTable.findGuilds(ownerId)
-      .thenCompose(this::checkUserGuilds);
+      .thenComposeAsync(this::checkUserGuilds);
   }
 
   public CompletableFuture<ActionResult> checkUserGuilds(List<String> guilds) {
