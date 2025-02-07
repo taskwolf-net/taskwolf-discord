@@ -59,7 +59,7 @@ dependencies {
 
   compileOnly("io.jsonwebtoken:jjwt:0.12.6")
 
-  implementation("net.dv8tion:JDA:5.2.1")
+  implementation("net.dv8tion:JDA:5.3.0")
 }
 
 tasks.test {
