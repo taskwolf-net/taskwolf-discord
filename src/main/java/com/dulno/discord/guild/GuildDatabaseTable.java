@@ -83,6 +83,22 @@ public final class GuildDatabaseTable extends DatabaseTable {
     return selectRows(condition).thenApply(List::size);
   }
 
+  public CompletableFuture<List<String>> findGuildsIfExists(UUID userId) {
+    var futureResponse = new CompletableFuture<List<String>>();
+    userGuildsExists(userId).thenAccept(exists -> findGuildsIfExists(userId, exists)
+      .thenAccept(futureResponse::complete));
+    return futureResponse;
+  }
+
+  private CompletableFuture<List<String>> findGuildsIfExists(
+    UUID userId, boolean exists
+  ) {
+    if (!exists) {
+      return CompletableFuture.completedFuture(Lists.newArrayList());
+    }
+    return findGuilds(userId);
+  }
+
   public CompletableFuture<List<String>> findGuilds(UUID userId) {
     return selectRow(userId).thenApply(row -> row.findCell(1).listValue());
   }

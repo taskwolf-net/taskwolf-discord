@@ -6,13 +6,10 @@ import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.JDA;
 import com.dulno.core.account.AccountLink;
 import com.dulno.discord.guild.GuildDatabaseTable;
-import org.json.JSONObject;
 
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor(staticName = "create")
 public final class DiscordAccountLink implements AccountLink {
@@ -29,7 +26,7 @@ public final class DiscordAccountLink implements AccountLink {
 
   @Override
   public CompletableFuture<List<AccountLinkEntry>> findAccounts(UUID id) {
-    return guildDatabaseTable.findGuilds(id)
+    return guildDatabaseTable.findGuildsIfExists(id)
       .thenApply(guilds -> guilds.stream()
         .map(guild -> AccountLinkEntry.create(guild,
           jda.getGuildById(guild).getName()))
