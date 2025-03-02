@@ -1,5 +1,6 @@
 package com.dulno.discord;
 
+import com.dulno.core.environment.DulnoEnvironment;
 import com.dulno.discord.action.channel.embed.ChannelEmbedAction;
 import com.dulno.discord.trigger.channel.message.ChannelMessageTrigger;
 import com.dulno.discord.trigger.channel.message.MessageListener;
@@ -56,11 +57,13 @@ public final class DiscordModule extends Integration {
     log = injector().getInstance(Log.class).subLog("Discord");
     injector().getInstance(SpringApplication.class).addInitializers(
       injector().getInstance(DiscordContextInitializer.class));
-    discordBot = DiscordBot.create(log, DiscordConfiguration.createAndLoad());
+    var configuration = DiscordConfiguration.createAndLoad();
+    discordBot = DiscordBot.create(log, configuration);
     discordBot.initialize();
     var jda = discordBot.jda();
     var guildDatabaseTable = injector().getInstance(GuildDatabaseTable.class);
-    accountLink = DiscordAccountLink.create(jda, guildDatabaseTable);
+    accountLink = DiscordAccountLink.create(jda, guildDatabaseTable,
+      configuration, injector().getInstance(DulnoEnvironment.class));
     guildSelect = GuildSelect.create(guildDatabaseTable, jda);
     channelSelect = ChannelSelect.create(jda, guildDatabaseTable);
     roleSelect = RoleSelect.create(jda, guildDatabaseTable);
