@@ -57,12 +57,13 @@ public final class DiscordModule extends Integration {
     log = injector().getInstance(Log.class).subLog("Discord");
     injector().getInstance(SpringApplication.class).addInitializers(
       injector().getInstance(DiscordContextInitializer.class));
-    discordBot = DiscordBot.create(log, DiscordConfiguration.createAndLoad());
+    var configuration = DiscordConfiguration.createAndLoad();
+    discordBot = DiscordBot.create(log, configuration);
     discordBot.initialize();
     var jda = discordBot.jda();
     var guildDatabaseTable = injector().getInstance(GuildDatabaseTable.class);
     accountLink = DiscordAccountLink.create(jda, guildDatabaseTable,
-      injector().getInstance(DulnoEnvironment.class));
+      configuration, injector().getInstance(DulnoEnvironment.class));
     guildSelect = GuildSelect.create(guildDatabaseTable, jda);
     channelSelect = ChannelSelect.create(jda, guildDatabaseTable);
     roleSelect = RoleSelect.create(jda, guildDatabaseTable);
