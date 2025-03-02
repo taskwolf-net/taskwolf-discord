@@ -1,6 +1,7 @@
 package com.dulno.discord.access;
 
 import com.dulno.core.access.DulnoRestController;
+import com.dulno.core.environment.DulnoEnvironment;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import com.dulno.core.organization.team.TeamTargetDatabaseTable;
@@ -21,15 +22,17 @@ import java.util.concurrent.CompletableFuture;
 public class GuildController extends DulnoRestController {
   private final GuildDatabaseTable guildDatabaseTable;
   private final TeamTargetDatabaseTable teamTargetDatabaseTable;
+  private final DulnoEnvironment environment;
 
   private GuildController(
     Key secretKey, UserDatabaseTable userDatabaseTable,
     GuildDatabaseTable guildDatabaseTable,
-    TeamTargetDatabaseTable teamTargetDatabaseTable
+    TeamTargetDatabaseTable teamTargetDatabaseTable, DulnoEnvironment environment
   ) {
     super(secretKey, userDatabaseTable);
     this.guildDatabaseTable = guildDatabaseTable;
     this.teamTargetDatabaseTable = teamTargetDatabaseTable;
+    this.environment = environment;
   }
 
   @RequestMapping(path = "/discord/guild/add/", method = RequestMethod.GET)
@@ -37,7 +40,7 @@ public class GuildController extends DulnoRestController {
     HttpServletRequest request, HttpServletResponse response,
     @RequestParam("state") String state, @RequestParam("guild_id") String guildId
   ) throws Exception {
-    response.sendRedirect("https://dulno.com/close/");
+    response.sendRedirect("https://" + environment.domain() + "/close/");
     var split = state.split("DULNO-STATE-SPLIT");
     var apiKey = split[0];
     if (!isValidApiKey(apiKey)) {

@@ -16,6 +16,7 @@ public final class DiscordConfiguration extends Configuration {
     return configuration;
   }
 
+  private String clientId;
   private String token;
   private String activity;
 
@@ -25,6 +26,7 @@ public final class DiscordConfiguration extends Configuration {
 
   @Override
   protected void deserialize(JSONObject json) {
+    clientId = json.getString("clientId");
     token = json.getString("token");
     activity = json.getString("activity");
   }

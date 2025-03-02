@@ -1,6 +1,7 @@
 package com.dulno.discord;
 
 import com.dulno.core.account.AccountLinkEntry;
+import com.dulno.core.environment.DulnoEnvironment;
 import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.JDA;
@@ -15,6 +16,8 @@ import java.util.concurrent.CompletableFuture;
 public final class DiscordAccountLink implements AccountLink {
   private final JDA jda;
   private final GuildDatabaseTable guildDatabaseTable;
+  private final DiscordConfiguration configuration;
+  private final DulnoEnvironment environment;
 
   @Override
   public CompletableFuture<Boolean> accountExists(UUID id) {
@@ -75,11 +78,14 @@ public final class DiscordAccountLink implements AccountLink {
     return !guilds.isEmpty();
   }
 
-  private static final String DISCORD_REGISTRATION_URL = "https://discord.com/api/oauth2/authorize?client_id=1160570527224701048&permissions=8&redirect_uri=https%3A%2F%2Fapi.dulno.com%2Fv1%2Fdiscord%2Fguild%2Fadd%2F&state=DULNO-STATE&response_type=code&scope=guilds%20bot%20identify";
+  private static final String DISCORD_REGISTRATION_URL = "https://discord.com/api/oauth2/authorize?client_id=CLIENT-ID&permissions=8&redirect_uri=https%3A%2F%2FDOMAIN%2Fv1%2Fdiscord%2Fguild%2Fadd%2F&state=DULNO-STATE&response_type=code&scope=guilds%20bot%20identify";
 
   @Override
   public String registrationUrl(UUID id, String apiKey) {
-    return DISCORD_REGISTRATION_URL.replace("DULNO-STATE", apiKey + "DULNO-STATE-SPLIT" + id.toString());
+    return DISCORD_REGISTRATION_URL
+      .replace("CLIENT-ID", configuration.clientId())
+      .replace("DULNO-STATE", apiKey + "DULNO-STATE-SPLIT" + id.toString())
+      .replace("DOMAIN", environment.publicEndpoint());
   }
 
   @Override
