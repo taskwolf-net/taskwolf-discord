@@ -50,13 +50,25 @@ public final class ChannelEmbedActionExecutor implements ActionExecutor {
     authorName = placeholderDissolve.dissolve(authorName);
     authorUrl = placeholderDissolve.dissolve(authorUrl);
     authorIcon = placeholderDissolve.dissolve(authorIcon);
-    fields = placeholderDissolve.dissolve(fields);
+    dissolveFields(information);
     thumbnail = placeholderDissolve.dissolve(thumbnail);
     image = placeholderDissolve.dissolve(image);
     footerText = placeholderDissolve.dissolve(footerText);
     footerIcon = placeholderDissolve.dissolve(footerIcon);
     return guildDatabaseTable.userGuildsExists(ownerId)
       .thenCompose(this::checkUserGuilds);
+  }
+
+  private void dissolveFields(Map<String, Object> information) {
+    var formattedInformation = Maps.<String, Object>newHashMap();
+    for (var entry : information.entrySet()) {
+      formattedInformation.put(entry.getKey(),
+        entry.getValue().toString().replace("\\", "\\\\")
+          .replace("\"", "\\\"").replace("\b", "\\b").replace("\f", "\\f")
+          .replace("\n", "\\n").replace("\r", "\\r").replace("\t", "\\t"));
+    }
+    var dissolve = PlaceholderDissolve.create(formattedInformation);
+    fields = dissolve.dissolve(fields);
   }
 
   public CompletableFuture<ActionResult> checkUserGuilds(boolean hasGuilds) {
