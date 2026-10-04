@@ -1,0 +1,68 @@
+package net.taskwolf.discord.action.channel.create;
+
+import com.datastax.oss.driver.shaded.guava.common.collect.Maps;
+import net.taskwolf.discord.guild.GuildDatabaseTable;
+import lombok.AllArgsConstructor;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.taskwolf.workflow.action.ActionExecutor;
+import net.taskwolf.workflow.action.ActionResult;
+import net.taskwolf.workflow.placeholder.PlaceholderDissolve;
+
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+
+@AllArgsConstructor(staticName = "create")
+public final class ChannelCreateActionExecutor implements ActionExecutor {
+  private final JDA jda;
+  private final GuildDatabaseTable guildDatabaseTable;
+  private final UUID ownerId;
+  private final String guildIdentifier;
+  private String name;
+
+  @Override
+  public CompletableFuture<ActionResult> execute(Map<String, Object> information) {
+    var placeholderDissolve = PlaceholderDissolve.create(information);
+    name = placeholderDissolve.dissolve(name);
+    return guildDatabaseTable.userGuildsExists(ownerId)
+      .thenCompose(this::checkUserGuilds);
+  }
+
+  public CompletableFuture<ActionResult> checkUserGuilds(boolean hasGuilds) {
+    if (!hasGuilds) {
+      return ActionResult.futureFailure("discord.action.channel.create.failure.server.not.found");
+    }
+    return guildDatabaseTable.findGuilds(ownerId)
+      .thenComposeAsync(this::checkUserGuilds);
+  }
+
+  public CompletableFuture<ActionResult> checkUserGuilds(List<String> guilds) {
+    if (!guilds.contains(guildIdentifier)) {
+      return ActionResult.futureFailure("discord.action.channel.create.failure.server.not.found");
+    }
+    return createChannel();
+  }
+
+  public CompletableFuture<ActionResult> createChannel() {
+    var guild = jda.getGuildById(guildIdentifier);
+    if (guild == null) {
+      return ActionResult.futureFailure("discord.action.channel.create.failure.server.not.found");
+    }
+    if (name.isEmpty()) {
+      return ActionResult.futureFailure("discord.action.channel.create.failure.name.empty");
+    }
+    var futureResponse = new CompletableFuture<ActionResult>();
+    guild.createTextChannel(name).queue(channel ->
+      futureResponse.complete(ActionResult.success(buildInformation(channel))));
+    return futureResponse;
+  }
+
+  private Map<String, Object> buildInformation(TextChannel channel) {
+    var information = Maps.<String, Object>newHashMap();
+    information.put("channelName", channel.getName());
+    information.put("channelIdentifier", channel.getId());
+    return information;
+  }
+}

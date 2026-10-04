@@ -1,0 +1,95 @@
+package net.taskwolf.discord.action.user.retrieve;
+
+import net.taskwolf.discord.guild.GuildDatabaseTable;
+import com.google.common.collect.Lists;
+import lombok.AllArgsConstructor;
+import net.dv8tion.jda.api.JDA;
+import net.taskwolf.workflow.action.Action;
+import net.taskwolf.workflow.action.ActionContentDatabaseTable;
+import net.taskwolf.workflow.action.ActionInformation;
+import net.taskwolf.core.database.*;
+import net.taskwolf.workflow.component.input.InputComponentDataType;
+import net.taskwolf.workflow.component.input.InputComponentSelect;
+import net.taskwolf.workflow.component.input.InputComponentVariable;
+import net.taskwolf.workflow.component.output.OutputComponentVariable;
+
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+
+@AllArgsConstructor(staticName = "create")
+public final class UserRetrieveAction implements Action<UserRetrieveActionExecutor> {
+  public static UserRetrieveAction create(
+    JDA jda, GuildDatabaseTable guildDatabaseTable,
+    InputComponentSelect guildComponentSelect,
+    DatabaseConnection databaseConnection, DatabaseKeyspace databaseKeyspace
+  ) {
+    var contentColumns = Lists.<DatabaseColumn>newArrayList();
+    contentColumns.add(DatabaseColumn.create("owner", DatabaseDataType.UUID));
+    contentColumns.add(DatabaseColumn.create("guild", DatabaseDataType.TEXT));
+    contentColumns.add(DatabaseColumn.create("user", DatabaseDataType.TEXT));
+    return new UserRetrieveAction(jda, guildDatabaseTable, guildComponentSelect,
+      ActionContentDatabaseTable.create(databaseConnection, databaseKeyspace,
+        "action_discord_user_retrieve", contentColumns));
+  }
+
+  private final JDA jda;
+  private final GuildDatabaseTable guildDatabaseTable;
+  private final InputComponentSelect guildComponentSelect;
+  private final ActionContentDatabaseTable contentDatabaseTable;
+
+  @Override
+  public String type() {
+    return "discord-user-retrieve-action";
+  }
+
+  @Override
+  public ActionInformation information() {
+    return ActionInformation.builder()
+      .withName("discord.action.user.retrieve.name")
+      .withDescription("discord.action.user.retrieve.description")
+      .withInputVariable(InputComponentVariable.createSelect("discord.action.user.retrieve.input.server.name",
+        "guildIdentifier", "discord.action.user.retrieve.input.server.description", guildComponentSelect))
+      .withInputVariable(InputComponentVariable.createRequired("discord.action.user.retrieve.input.user.name",
+        "userIdentifier", "discord.action.user.retrieve.input.user.description", InputComponentDataType.TEXT))
+      .withOutputVariable(OutputComponentVariable.create("discord.action.user.retrieve.output.user.identifier",
+        "userIdentifier"))
+      .withOutputVariable(OutputComponentVariable.create("discord.action.user.retrieve.output.user.name",
+        "userName"))
+      .withOutputVariable(OutputComponentVariable.create("discord.action.user.retrieve.output.user.avatar",
+        "userAvatarUrl")).build();
+  }
+
+  @Override
+  public void initialize() {
+    contentDatabaseTable.createIfNotExists();
+  }
+
+  @Override
+  public CompletableFuture<Void> insert(
+    UUID actionId, UUID ownerId, Map<String, Object> content
+  ) {
+    return contentDatabaseTable.insertContent(actionId, DatabaseRow.of(ownerId,
+      content.get("guildIdentifier"), content.get("userIdentifier")));
+  }
+
+  @Override
+  public CompletableFuture<Map<String, Object>> findContent(UUID triggerId) {
+    return contentDatabaseTable.findContent(triggerId).thenApply(row ->
+      Map.of("guildIdentifier", row.findCell(2).stringValue(),
+        "userIdentifier", row.findCell(3).stringValue()));
+  }
+
+  @Override
+  public CompletableFuture<UserRetrieveActionExecutor> build(UUID actionId) {
+    return contentDatabaseTable.findContent(actionId).thenApply(content ->
+      UserRetrieveActionExecutor.create(jda, guildDatabaseTable,
+        content.findCell(1).uuidValue(), content.findCell(2).stringValue(),
+        content.findCell(3).stringValue()));
+  }
+
+  @Override
+  public CompletableFuture<Void> delete(UUID actionId) {
+    return contentDatabaseTable.deleteContent(actionId);
+  }
+}
